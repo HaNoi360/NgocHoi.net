@@ -373,7 +373,7 @@ html.no-survey #khao-sat, html.no-survey #khao-sat-2, html.no-survey #menu .nav-
 #appRoot .acc-body .cx { margin: 1.5rem 0; }
 
 /* Nút gọi điện + Zalo nổi (góc dưới bên trái khung App) */
-#appRoot .contact-fab { position: absolute; z-index: 20; left: 12px; bottom: calc(var(--menu) + 12px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+#appRoot .contact-fab { position: absolute; z-index: 20; left: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
 #appRoot .cf-btn { width: 48px; height: 48px; border: 0; border-radius: 50%; display: grid; place-items: center; color: #fff; text-decoration: none; box-shadow: 0 4px 14px rgba(0,0,0,.4); }
 #appRoot .cf-call { background: #1f9d55; animation: cf-ring 2.4s ease-out infinite; }
 #appRoot .cf-zalo { background: #0068ff; font: 700 13px/1 var(--font-body, sans-serif); letter-spacing: 0; }
