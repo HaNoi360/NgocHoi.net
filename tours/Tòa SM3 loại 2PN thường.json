@@ -1,0 +1,172 @@
+{
+  "info": {
+    "area": "",
+    "price": "",
+    "note": ""
+  },
+  "default": {
+    "firstScene": "Phòng_khách",
+    "autoLoad": true,
+    "autoRotate": 8
+  },
+  "scenes": {
+    "Phòng_khách": {
+      "panorama": "1w5QN0PMYnmBAwPr8dN8dL7fRz7Ivbuv2",
+      "hotSpots": [
+        {
+          "pitch": -2.0388,
+          "yaw": -89.1262,
+          "type": "info",
+          "cssClass": "ThongTin",
+          "text": "Lối ra loggia"
+        },
+        {
+          "pitch": -2.0388,
+          "yaw": 62.0971,
+          "type": "info",
+          "cssClass": "ThongTin",
+          "text": "Cửa 1,5 cánh chống cháy 60 phút kèm khóa 5 chức năng."
+        },
+        {
+          "pitch": -7.8641,
+          "yaw": 177.6699,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Ban_công",
+          "text": "Ban công"
+        },
+        {
+          "pitch": -4.835,
+          "yaw": -144.8155,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_master",
+          "text": "Phòng ngủ master"
+        },
+        {
+          "pitch": -1.8058,
+          "yaw": -47.4175,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_nhỏ",
+          "text": "Phòng ngủ nhỏ"
+        },
+        {
+          "pitch": -3.6393,
+          "yaw": -36.7869,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "WC_chung",
+          "text": "WC chung"
+        }
+      ],
+      "pitch": -7.6311,
+      "yaw": 162.5243
+    },
+    "Ban_công": {
+      "panorama": "1JI_Luy87Xgb-JPZQ4-ERQxfqS2HjAWVh",
+      "hotSpots": [
+        {
+          "pitch": 5.8835,
+          "yaw": -9.2039,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "WC_chung",
+          "text": "WC chung"
+        },
+        {
+          "pitch": 3.5534,
+          "yaw": -22.2524,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_master",
+          "text": "Phòng ngủ master"
+        },
+        {
+          "pitch": 2.8544,
+          "yaw": -12.466,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_nhỏ",
+          "text": "Phòng ngủ nhỏ"
+        },
+        {
+          "pitch": -8.3301,
+          "yaw": -4.0777,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_khách",
+          "text": "Phòng khách"
+        }
+      ],
+      "pitch": -3.2039,
+      "yaw": 173.0097
+    },
+    "WC_chung": {
+      "panorama": "1tZ9Ld03FwbalP6u5EphIT8sbAsvgOt13",
+      "hotSpots": [
+        {
+          "pitch": -1.3289,
+          "yaw": 36.699,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_khách",
+          "text": "Phòng khách"
+        }
+      ],
+      "pitch": 14.0769,
+      "yaw": 174.9231
+    },
+    "Phòng_ngủ_nhỏ": {
+      "panorama": "1neVfJ0645NH-HsuIH1GQAN3T_iWQzSf5",
+      "hotSpots": [
+        {
+          "pitch": -5.3077,
+          "yaw": -45.4615,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_khách",
+          "text": "Phòng khách"
+        }
+      ],
+      "pitch": 0.4615,
+      "yaw": -170.5385
+    },
+    "Phòng_ngủ_master": {
+      "panorama": "1UZVrAYjlY2osBt4PJJSzAyY2TVDCjAFN",
+      "hotSpots": [
+        {
+          "pitch": 0.2308,
+          "yaw": 128.5385,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_khách",
+          "text": "Phòng khách"
+        },
+        {
+          "pitch": 6.3495,
+          "yaw": 125.9417,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "WC_phòng_ngủ_master",
+          "text": "WC phòng ngủ master"
+        }
+      ]
+    },
+    "WC_phòng_ngủ_master": {
+      "panorama": "1oCBI2icDrqO4yrkDifokhS_g4NyGsXII",
+      "hotSpots": [
+        {
+          "pitch": 0.3022,
+          "yaw": -129.4369,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_master",
+          "text": "Phòng ngủ master"
+        }
+      ],
+      "pitch": 2.0769,
+      "yaw": 99.6923
+    }
+  }
+}

@@ -1,0 +1,683 @@
+{
+  "info": {
+    "area": "",
+    "price": "",
+    "note": ""
+  },
+  "default": {
+    "firstScene": "Trung_tâm_dự_án",
+    "autoLoad": true,
+    "autoRotate": 8
+  },
+  "scenes": {
+    "Trung_tâm_dự_án": {
+      "panorama": "1lPepFBM3dvKqXJBt-AA765S5mNi0AZeb",
+      "hotSpots": [
+        {
+          "pitch": -28.1359,
+          "yaw": 42.7573,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Cầu_Lumis",
+          "text": "Cầu Lumis"
+        },
+        {
+          "pitch": -78,
+          "yaw": -169.2816,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Suối_Harmonia",
+          "text": "Suối Harmonia"
+        },
+        {
+          "pitch": -35.5922,
+          "yaw": 174.6408,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Cầu_Sunset",
+          "text": "Cầu Sunset"
+        },
+        {
+          "pitch": 5.8835,
+          "yaw": 38.5631,
+          "type": "scene",
+          "cssClass": "Flycam",
+          "sceneId": "Cảnh_ngoài_ban_đêm",
+          "text": "Cảnh ngoài ban đêm"
+        },
+        {
+          "pitch": 5.8835,
+          "yaw": -86.5631,
+          "type": "scene",
+          "cssClass": "Flycam",
+          "sceneId": "Cảnh_ngoài_ban_ngày",
+          "text": "Cảnh ngoài ban ngày"
+        },
+        {
+          "pitch": -20.9126,
+          "yaw": -79.8058,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Sảnh_tòa_Seren",
+          "text": "Sảnh tòa Seren"
+        },
+        {
+          "pitch": -23.4757,
+          "yaw": 167.6505,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Sảnh_tòa_Ivy",
+          "text": "Sảnh tòa Ivy"
+        },
+        {
+          "pitch": -23.4757,
+          "yaw": -95.1845,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Sảnh_tòa_Lavish",
+          "text": "Sảnh tòa Lavish"
+        }
+      ],
+      "pitch": -12.5243,
+      "yaw": 50.9126
+    },
+    "Góc_nhìn_trên_cao_từ_cổng_chào_dự_án": {
+      "panorama": "14CIb81FK60JuFQ3S2dvPlfqn7qUfm5jk",
+      "hotSpots": [
+        {
+          "pitch": -26.2609,
+          "yaw": -37.165,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Suối_Harmonia",
+          "text": "Suối Harmonia"
+        },
+        {
+          "pitch": -67.9806,
+          "yaw": 17.8252,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Cầu_Lumis",
+          "text": "Cầu Lumis"
+        },
+        {
+          "pitch": -18.8155,
+          "yaw": -52.0777,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Cầu_Sunset",
+          "text": "Cầu Sunset"
+        },
+        {
+          "pitch": -18.1165,
+          "yaw": -85.3981,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Sảnh_tòa_Ivy",
+          "text": "Sảnh tòa Ivy"
+        },
+        {
+          "pitch": -17.1845,
+          "yaw": 8.2718,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Sảnh_tòa_Seren",
+          "text": "Sảnh tòa Seren"
+        },
+        {
+          "pitch": 21.9612,
+          "yaw": 18.0583,
+          "type": "scene",
+          "cssClass": "Flycam",
+          "sceneId": "Cảnh_ngoài_ban_ngày",
+          "text": "Cảnh ngoài ban ngày"
+        },
+        {
+          "pitch": 18.233,
+          "yaw": 167.6505,
+          "type": "scene",
+          "cssClass": "Flycam",
+          "sceneId": "Cảnh_ngoài_ban_đêm",
+          "text": "Cảnh ngoài ban đêm"
+        },
+        {
+          "pitch": -13.4563,
+          "yaw": -18.7573,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Sảnh_tòa_Lavish",
+          "text": "Sảnh tòa Lavish"
+        },
+        {
+          "pitch": 1.4563,
+          "yaw": -35.767,
+          "type": "scene",
+          "cssClass": "Flycam",
+          "sceneId": "Trung_tâm_dự_án",
+          "text": "Trung tâm dự án"
+        }
+      ],
+      "pitch": -18.1165,
+      "yaw": -40.6602
+    },
+    "Suối_Harmonia": {
+      "panorama": "18Khtn-BowsH5VOJ2Q4Ju5w2Z3clbIoUX",
+      "hotSpots": [
+        {
+          "pitch": -0.8738,
+          "yaw": 167.4175,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Sảnh_tòa_Ivy",
+          "text": "Sảnh tòa Ivy"
+        },
+        {
+          "pitch": 5.1845,
+          "yaw": 172.7767,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Cầu_Sunset",
+          "text": "Cầu Sunset"
+        },
+        {
+          "pitch": 3.3204,
+          "yaw": 30.1748,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Cầu_Lumis",
+          "text": "Cầu Lumis"
+        },
+        {
+          "pitch": 38.7379,
+          "yaw": 25.9806,
+          "type": "scene",
+          "cssClass": "Flycam",
+          "sceneId": "Cảnh_ngoài_ban_đêm",
+          "text": "Cảnh ngoài ban đêm"
+        },
+        {
+          "pitch": 41.068,
+          "yaw": -130.6019,
+          "type": "scene",
+          "cssClass": "Flycam",
+          "sceneId": "Trung_tâm_dự_án",
+          "text": "Trung tâm dự án"
+        },
+        {
+          "pitch": 39.4369,
+          "yaw": -83.301,
+          "type": "scene",
+          "cssClass": "Flycam",
+          "sceneId": "Cảnh_ngoài_ban_ngày",
+          "text": "Cảnh ngoài ban ngày"
+        },
+        {
+          "pitch": 0.5243,
+          "yaw": -76.5437,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Sảnh_tòa_Seren",
+          "text": "Sảnh tòa Seren"
+        },
+        {
+          "pitch": 0.0583,
+          "yaw": -174.6408,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Sảnh_tòa_Lavish",
+          "text": "Sảnh tòa Lavish"
+        }
+      ],
+      "pitch": 31.7,
+      "yaw": -129.9
+    },
+    "Cảnh_ngoài_ban_đêm": {
+      "panorama": "1ebCbO0HDUIqrVctC8MaewG9WXrX89LDX",
+      "hotSpots": [
+        {
+          "pitch": 4.9515,
+          "yaw": 8.2718,
+          "type": "scene",
+          "cssClass": "Flycam",
+          "sceneId": "Cảnh_ngoài_ban_ngày",
+          "text": "Cảnh ngoài ban ngày"
+        },
+        {
+          "pitch": -15.7864,
+          "yaw": -8.9709,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Suối_Harmonia",
+          "text": "Suối Harmonia"
+        },
+        {
+          "pitch": -18.8155,
+          "yaw": -3.8447,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Cầu_Lumis",
+          "text": "Cầu Lumis"
+        },
+        {
+          "pitch": -12.7573,
+          "yaw": -22.4854,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Sảnh_tòa_Ivy",
+          "text": "Sảnh tòa Ivy"
+        },
+        {
+          "pitch": -12.0583,
+          "yaw": 3.8447,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Sảnh_tòa_Seren",
+          "text": "Sảnh tòa Seren"
+        },
+        {
+          "pitch": -0.8738,
+          "yaw": -9.2039,
+          "type": "scene",
+          "cssClass": "Flycam",
+          "sceneId": "Trung_tâm_dự_án",
+          "text": "Trung tâm dự án"
+        }
+      ],
+      "pitch": -7.6,
+      "yaw": -8.3
+    },
+    "Cảnh_ngoài_ban_ngày": {
+      "panorama": "19k-A6zNzJNd2YeCXThCYLrKtNkDUiqEJ",
+      "hotSpots": [
+        {
+          "pitch": 8.6796,
+          "yaw": -23.8835,
+          "type": "scene",
+          "cssClass": "Flycam",
+          "sceneId": "Cảnh_ngoài_ban_đêm",
+          "text": "Cảnh ngoài ban đêm"
+        },
+        {
+          "pitch": -9.0291,
+          "yaw": -14.7961,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Sảnh_tòa_Seren",
+          "text": "Sảnh tòa Seren"
+        },
+        {
+          "pitch": -11.8252,
+          "yaw": -3.6117,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Sảnh_tòa_Lavish",
+          "text": "Sảnh tòa Lavish"
+        },
+        {
+          "pitch": -10.8932,
+          "yaw": 7.1068,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Sảnh_tòa_Ivy",
+          "text": "Sảnh tòa Ivy"
+        },
+        {
+          "pitch": -8.3301,
+          "yaw": 4.0777,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Cầu_Sunset",
+          "text": "Cầu Sunset"
+        },
+        {
+          "pitch": -9.9612,
+          "yaw": -9.9029,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Suối_Harmonia",
+          "text": "Suối Harmonia"
+        }
+      ],
+      "pitch": -7.2,
+      "yaw": -3.6
+    },
+    "Cầu_Lumis": {
+      "panorama": "1OWwTJkV3G6Kqr16l_FoWwkgupcQlsmlj",
+      "hotSpots": [
+        {
+          "pitch": -6.699,
+          "yaw": 30.6408,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Suối_Harmonia",
+          "text": "Suối Harmonia"
+        },
+        {
+          "pitch": -4.1359,
+          "yaw": -14.7961,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Sảnh_tòa_Ivy",
+          "text": "Sảnh tòa Ivy"
+        },
+        {
+          "pitch": -1.8058,
+          "yaw": 13.6311,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Cầu_Sunset",
+          "text": "Cầu Sunset"
+        },
+        {
+          "pitch": 18.699,
+          "yaw": 36.699,
+          "type": "scene",
+          "cssClass": "Flycam",
+          "sceneId": "Trung_tâm_dự_án",
+          "text": "Trung tâm dự án"
+        },
+        {
+          "pitch": 35.0097,
+          "yaw": -121.0485,
+          "type": "scene",
+          "cssClass": "Flycam",
+          "sceneId": "Cảnh_ngoài_ban_đêm",
+          "text": "Cảnh ngoài ban đêm"
+        },
+        {
+          "pitch": 29.4175,
+          "yaw": 106.1359,
+          "type": "scene",
+          "cssClass": "Flycam",
+          "sceneId": "Cảnh_ngoài_ban_ngày",
+          "text": "Cảnh ngoài ban ngày"
+        },
+        {
+          "pitch": -2.9709,
+          "yaw": 87.2621,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Sảnh_tòa_Seren",
+          "text": "Sảnh tòa Seren"
+        }
+      ],
+      "pitch": 10.8,
+      "yaw": 36.9
+    },
+    "Cầu_Sunset": {
+      "panorama": "1vpTHpO7ESMox--CxbMv5SuxQzj-dfzof",
+      "hotSpots": [
+        {
+          "pitch": 27.7864,
+          "yaw": 94.9515,
+          "type": "scene",
+          "cssClass": "Flycam",
+          "sceneId": "Cảnh_ngoài_ban_đêm",
+          "text": "Cảnh ngoài ban đêm"
+        },
+        {
+          "pitch": 33.8447,
+          "yaw": -74.4466,
+          "type": "scene",
+          "cssClass": "Flycam",
+          "sceneId": "Cảnh_ngoài_ban_ngày",
+          "text": "Cảnh ngoài ban ngày"
+        },
+        {
+          "pitch": 38.0388,
+          "yaw": 52.7767,
+          "type": "scene",
+          "cssClass": "Flycam",
+          "sceneId": "Trung_tâm_dự_án",
+          "text": "Trung tâm dự án"
+        },
+        {
+          "pitch": -14.6214,
+          "yaw": 81.2039,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Suối_Harmonia",
+          "text": "Suối Harmonia"
+        },
+        {
+          "pitch": -1.5619,
+          "yaw": 107.767,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Cầu_Lumis",
+          "text": "Cầu Lumis"
+        },
+        {
+          "pitch": -12.5243,
+          "yaw": -70.4854,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Sảnh_tòa_Lavish",
+          "text": "Sảnh tòa Lavish"
+        },
+        {
+          "pitch": -12.9903,
+          "yaw": -112.4272,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Sảnh_tòa_Ivy",
+          "text": "Sảnh tòa Ivy"
+        }
+      ],
+      "pitch": 4.0194,
+      "yaw": 93.3204
+    },
+    "Toàn_cảnh_chính_giữa_nhìn_từ_trên_cao": {
+      "panorama": "1PubyhqySq0-1xxRgSeVRg1j8hm3yFbBJ",
+      "hotSpots": [
+        {
+          "pitch": -2.0388,
+          "yaw": 85.8641,
+          "type": "scene",
+          "cssClass": "Flycam",
+          "sceneId": "Cảnh_ngoài_ban_đêm",
+          "text": "Cảnh ngoài ban đêm"
+        },
+        {
+          "pitch": -1.8058,
+          "yaw": -147.8447,
+          "type": "scene",
+          "cssClass": "Flycam",
+          "sceneId": "Cảnh_ngoài_ban_ngày",
+          "text": "Cảnh ngoài ban ngày"
+        },
+        {
+          "pitch": -83.1262,
+          "yaw": 54.8738,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Cầu_Lumis",
+          "text": "Cầu Lumis"
+        },
+        {
+          "pitch": -73.8058,
+          "yaw": -173.0097,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Cầu_Sunset",
+          "text": "Cầu Sunset"
+        },
+        {
+          "pitch": -79.6311,
+          "yaw": -154.3689,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Suối_Harmonia",
+          "text": "Suối Harmonia"
+        },
+        {
+          "pitch": -64.2524,
+          "yaw": -87.2621,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Sảnh_tòa_Seren",
+          "text": "Sảnh tòa Seren"
+        },
+        {
+          "pitch": -60.5243,
+          "yaw": 169.0485,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Sảnh_tòa_Ivy",
+          "text": "Sảnh tòa Ivy"
+        },
+        {
+          "pitch": -57.0291,
+          "yaw": -140.3883,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Sảnh_tòa_Lavish",
+          "text": "Sảnh tòa Lavish"
+        }
+      ],
+      "pitch": -40.4854,
+      "yaw": 23.6505
+    },
+    "Sảnh_tòa_Ivy": {
+      "panorama": "164AJNLkEOVGtYerkqH_yHTkjwz816Bhi",
+      "hotSpots": [
+        {
+          "pitch": -0.8738,
+          "yaw": -77.7087,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Sảnh_tòa_Lavish",
+          "text": "Sảnh tòa Lavish"
+        },
+        {
+          "pitch": 47.1262,
+          "yaw": 73.2816,
+          "type": "scene",
+          "cssClass": "Flycam",
+          "sceneId": "Cảnh_ngoài_ban_đêm",
+          "text": "Cảnh ngoài ban đêm"
+        },
+        {
+          "pitch": 42.233,
+          "yaw": -134.3301,
+          "type": "scene",
+          "cssClass": "Flycam",
+          "sceneId": "Cảnh_ngoài_ban_ngày",
+          "text": "Cảnh ngoài ban ngày"
+        },
+        {
+          "pitch": 7.2816,
+          "yaw": -50.9126,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Cầu_Sunset",
+          "text": "Cầu Sunset"
+        },
+        {
+          "pitch": 0.2913,
+          "yaw": -51.1456,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Suối_Harmonia",
+          "text": "Suối Harmonia"
+        }
+      ],
+      "pitch": 20.6,
+      "yaw": -0.3
+    },
+    "Sảnh_tòa_Lavish": {
+      "panorama": "1lYJB6ZeYUgN2bgPlyfgmcRbpsdQ-6ucA",
+      "hotSpots": [
+        {
+          "pitch": 3.0874,
+          "yaw": 67.2233,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Sảnh_tòa_Ivy",
+          "text": "Sảnh tòa Ivy"
+        },
+        {
+          "pitch": 2.1553,
+          "yaw": -65.1262,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Sảnh_tòa_Seren",
+          "text": "Sảnh tòa Seren"
+        },
+        {
+          "pitch": 50.1553,
+          "yaw": 176.7379,
+          "type": "scene",
+          "cssClass": "Flycam",
+          "sceneId": "Cảnh_ngoài_ban_ngày",
+          "text": "Cảnh ngoài ban ngày"
+        },
+        {
+          "pitch": 26.8544,
+          "yaw": 71.6505,
+          "type": "scene",
+          "cssClass": "Flycam",
+          "sceneId": "Cảnh_ngoài_ban_đêm",
+          "text": "Cảnh ngoài ban đêm"
+        },
+        {
+          "pitch": 14.5049,
+          "yaw": 49.5146,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Cầu_Sunset",
+          "text": "Cầu Sunset"
+        },
+        {
+          "pitch": -0.6408,
+          "yaw": -44.3883,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Suối_Harmonia",
+          "text": "Suối Harmonia"
+        }
+      ],
+      "pitch": 14.3,
+      "yaw": 4.5
+    },
+    "Sảnh_tòa_Seren": {
+      "panorama": "16lUns-2i39pLx0Fz4I26b4wDIm9yFRGc",
+      "hotSpots": [
+        {
+          "pitch": 0.2913,
+          "yaw": 76.0777,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Sảnh_tòa_Lavish",
+          "text": "Sảnh tòa Lavish"
+        },
+        {
+          "pitch": 42.233,
+          "yaw": -46.4854,
+          "type": "scene",
+          "cssClass": "Flycam",
+          "sceneId": "Cảnh_ngoài_ban_đêm",
+          "text": "Cảnh ngoài ban đêm"
+        },
+        {
+          "pitch": 43.6311,
+          "yaw": 171.6117,
+          "type": "scene",
+          "cssClass": "Flycam",
+          "sceneId": "Cảnh_ngoài_ban_ngày",
+          "text": "Cảnh ngoài ban ngày"
+        },
+        {
+          "pitch": 1.6893,
+          "yaw": 42.5243,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Suối_Harmonia",
+          "text": "Suối Harmonia"
+        }
+      ],
+      "pitch": 13.1,
+      "yaw": 1.7
+    }
+  }
+}

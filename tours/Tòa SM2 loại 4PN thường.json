@@ -1,0 +1,305 @@
+{
+  "info": {
+    "area": "",
+    "price": "",
+    "note": ""
+  },
+  "default": {
+    "firstScene": "Phòng_khách",
+    "autoLoad": true,
+    "autoRotate": 8
+  },
+  "scenes": {
+    "Phòng_khách": {
+      "panorama": "1y8NqHSyrHhjxxRa3j5-invvEiu0lTcn4",
+      "hotSpots": [
+        {
+          "pitch": -8.5631,
+          "yaw": -90.9903,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Ban_công",
+          "text": "Ban công"
+        },
+        {
+          "pitch": -5.068,
+          "yaw": -176.7379,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Bếp",
+          "text": "Bếp"
+        },
+        {
+          "pitch": -6.699,
+          "yaw": -34.835,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_master_01",
+          "text": "Phòng ngủ master 01"
+        },
+        {
+          "pitch": -5.767,
+          "yaw": 48.3495,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_nhỏ_01",
+          "text": "Phòng ngủ nhỏ 01"
+        },
+        {
+          "pitch": -3.6699,
+          "yaw": 81.4369,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_nhỏ_02",
+          "text": "Phòng ngủ nhỏ 02"
+        },
+        {
+          "pitch": -3.2039,
+          "yaw": 92.1553,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_master_02",
+          "text": "Phòng ngủ master 02"
+        },
+        {
+          "pitch": -4.1359,
+          "yaw": 120.5825,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "WC_chung",
+          "text": "WC chung"
+        },
+        {
+          "pitch": -0.8738,
+          "yaw": 87.4951,
+          "type": "info",
+          "cssClass": "ThongTin",
+          "text": "Lối ra loggia"
+        }
+      ],
+      "pitch": -23.2427,
+      "yaw": -86.3301
+    },
+    "Ban_công": {
+      "panorama": "1vXFS5wKZJX84zJGnHZiF2VX6OKO5ED2K",
+      "hotSpots": [
+        {
+          "pitch": -3.6699,
+          "yaw": -31.3398,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_master_01",
+          "text": "Phòng ngủ master 01"
+        },
+        {
+          "pitch": -2.2718,
+          "yaw": -16.4272,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_nhỏ_01",
+          "text": "Phòng ngủ nhỏ 01"
+        },
+        {
+          "pitch": -1.2787,
+          "yaw": -6.4918,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_nhỏ_02",
+          "text": "Phòng ngủ nhỏ 02"
+        },
+        {
+          "pitch": -0.4078,
+          "yaw": -0.5825,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_master_02",
+          "text": "Phòng ngủ master 02"
+        },
+        {
+          "pitch": -0.6408,
+          "yaw": 11.301,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "WC_chung",
+          "text": "WC chung"
+        },
+        {
+          "pitch": -1.5728,
+          "yaw": 17.8252,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Bếp",
+          "text": "Bếp"
+        },
+        {
+          "pitch": -1.8058,
+          "yaw": 86.7961,
+          "type": "info",
+          "cssClass": "ThongTin",
+          "text": "Cửa bếp thông ra ban công giúp thoát mùi hiệu quả."
+        },
+        {
+          "pitch": -7.8641,
+          "yaw": -5.4757,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_khách",
+          "text": "Phòng khách"
+        }
+      ],
+      "pitch": -34.8932,
+      "yaw": 176.9709
+    },
+    "Phòng_ngủ_master_01": {
+      "panorama": "1tZNGAL-4ifEFYGAy3rjwuB0NT3RLwnvF",
+      "hotSpots": [
+        {
+          "pitch": 0.5352,
+          "yaw": -104.2718,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_khách",
+          "text": "Phòng khách"
+        },
+        {
+          "pitch": 0.7682,
+          "yaw": 177.4369,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "WC_phòng_ngủ_master_01",
+          "text": "WC phòng ngủ master 01"
+        }
+      ],
+      "pitch": -6.932,
+      "yaw": -34.6019
+    },
+    "Phòng_ngủ_nhỏ_01": {
+      "panorama": "1-90usir4ekaVK7DrybaA7o5Q_ez_EX0I",
+      "hotSpots": [
+        {
+          "pitch": 1.0012,
+          "yaw": 73.2816,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_khách",
+          "text": "Phòng khách"
+        }
+      ],
+      "pitch": -8.5631,
+      "yaw": 1.5146
+    },
+    "Phòng_ngủ_master_02": {
+      "panorama": "1FkZzTef1P2ImBMw7OINMT6VWqnCYcr1O",
+      "hotSpots": [
+        {
+          "pitch": 2.8653,
+          "yaw": -134.3301,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_khách",
+          "text": "Phòng khách"
+        },
+        {
+          "pitch": 3.5643,
+          "yaw": -159.7282,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "WC_phòng_ngủ_master_02",
+          "text": "WC phòng ngủ master 02"
+        },
+        {
+          "pitch": 2.3883,
+          "yaw": -52.3107,
+          "type": "info",
+          "cssClass": "ThongTin",
+          "text": "Cửa sổ thông với loggia"
+        }
+      ],
+      "pitch": -0.1748,
+      "yaw": -1.7476
+    },
+    "Bếp": {
+      "panorama": "1JNhv31yFWxndiJGPtCU6PINc0yyfkt4O",
+      "hotSpots": [
+        {
+          "pitch": -9.0291,
+          "yaw": 1.0485,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Ban_công",
+          "text": "Ban công"
+        },
+        {
+          "pitch": -5.767,
+          "yaw": 151.5728,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_khách",
+          "text": "Phòng khách"
+        }
+      ],
+      "pitch": -3.6699,
+      "yaw": 51.8447
+    },
+    "Phòng_ngủ_nhỏ_02": {
+      "panorama": "1B-9kcFAQPTIrMi8rmYaXOpbgUComntP9",
+      "hotSpots": [
+        {
+          "pitch": -0.8738,
+          "yaw": -86.3301,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_khách",
+          "text": "Phòng khách"
+        }
+      ],
+      "pitch": -5.301,
+      "yaw": 112.1942
+    },
+    "WC_phòng_ngủ_master_01": {
+      "panorama": "1gH0JiF46dSDxeuRVlM_W0jU3SKRtCwRf",
+      "hotSpots": [
+        {
+          "pitch": 14.9818,
+          "yaw": 128.7379,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_master_01",
+          "text": "Phòng ngủ master 01"
+        }
+      ],
+      "pitch": 6.8155,
+      "yaw": 29.9417
+    },
+    "WC_phòng_ngủ_master_02": {
+      "panorama": "1rfapxeslObe2ITlIEaPP53Ty4NODQDDK",
+      "hotSpots": [
+        {
+          "pitch": 5.4098,
+          "yaw": 106.4262,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "WC_phòng_ngủ_master_02",
+          "text": "WC phòng ngủ master 02"
+        }
+      ],
+      "pitch": 3.7864,
+      "yaw": 26.9126
+    },
+    "WC_chung": {
+      "panorama": "1miN1QrAtT7DAtd2R-7JBONsBQzBGFaxH",
+      "hotSpots": [
+        {
+          "pitch": 11.7197,
+          "yaw": -152.9709,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_khách",
+          "text": "Phòng khách"
+        }
+      ],
+      "pitch": 1.6893,
+      "yaw": 3.8447
+    }
+  }
+}

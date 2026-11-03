@@ -1,0 +1,60 @@
+{
+  "tours": [
+    {
+      "id": "tien-ich-ben-ngoai",
+      "title": "Tiện ích bên ngoài",
+      "file": "Tiện ích bên ngoài.json",
+      "area": "",
+      "price": ""
+    },
+    {
+      "id": "toa-sm2-loai-3pn-dualkey",
+      "title": "Tòa SM2 loại 3PN Dualkey",
+      "file": "Tòa SM2 loại 3PN Dualkey.json",
+      "area": "",
+      "price": ""
+    },
+    {
+      "id": "toa-sm2-loai-3pn-thuong",
+      "title": "Tòa SM2 loại 3PN thường",
+      "file": "Tòa SM2 loại 3PN thường.json",
+      "area": "",
+      "price": ""
+    },
+    {
+      "id": "toa-sm2-loai-4pn-san-vuon",
+      "title": "Tòa SM2 loại 4PN sân vườn",
+      "file": "Tòa SM2 loại 4PN sân vườn.json",
+      "area": "",
+      "price": ""
+    },
+    {
+      "id": "toa-sm2-loai-4pn-thuong",
+      "title": "Tòa SM2 loại 4PN thường",
+      "file": "Tòa SM2 loại 4PN thường.json",
+      "area": "",
+      "price": ""
+    },
+    {
+      "id": "toa-sm3-loai-2pn-san-vuon",
+      "title": "Tòa SM3 loại 2PN sân vườn",
+      "file": "Tòa SM3 loại 2PN sân vườn.json",
+      "area": "",
+      "price": ""
+    },
+    {
+      "id": "toa-sm3-loai-2pn-thuong",
+      "title": "Tòa SM3 loại 2PN thường",
+      "file": "Tòa SM3 loại 2PN thường.json",
+      "area": "",
+      "price": ""
+    },
+    {
+      "id": "toa-sm3-loai-3pn-thuong",
+      "title": "Tòa SM3 loại 3PN thường",
+      "file": "Tòa SM3 loại 3PN thường.json",
+      "area": "",
+      "price": ""
+    }
+  ]
+}

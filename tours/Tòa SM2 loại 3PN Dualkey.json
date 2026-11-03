@@ -1,0 +1,240 @@
+{
+  "info": {
+    "area": "",
+    "price": "",
+    "note": ""
+  },
+  "default": {
+    "firstScene": "Phòng_khách_căn_2_ngủ",
+    "autoLoad": true,
+    "autoRotate": 8
+  },
+  "scenes": {
+    "Phòng_khách_căn_2_ngủ": {
+      "panorama": "1iaL6jsI6FubNMNJzlpYcjUsK20BgmrWr",
+      "hotSpots": [
+        {
+          "pitch": -6.9211,
+          "yaw": -131.068,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Căn_studio",
+          "text": "Căn studio"
+        },
+        {
+          "pitch": -6.466,
+          "yaw": 81.4369,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Ban_công",
+          "text": "Ban công"
+        },
+        {
+          "pitch": -9.4842,
+          "yaw": -138.5243,
+          "type": "info",
+          "cssClass": "ThongTin",
+          "text": "Lối vào bếp ngay sát cửa ra vào, rất thuận tiện cho việc di chuyển và nấu nướng."
+        },
+        {
+          "pitch": -6,
+          "yaw": 8.2718,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_master",
+          "text": "Phòng ngủ master"
+        },
+        {
+          "pitch": -4.3689,
+          "yaw": -9.6699,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "WC_chung",
+          "text": "WC chung"
+        },
+        {
+          "pitch": -3.9029,
+          "yaw": -2.6796,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_nhỏ",
+          "text": "Phòng ngủ nhỏ"
+        },
+        {
+          "pitch": 4.0303,
+          "yaw": -133.6311,
+          "type": "info",
+          "cssClass": "ThongTin",
+          "text": "Cửa này thông ra sảnh chung và từ sảnh chung có thể sang căn Studio"
+        }
+      ],
+      "pitch": -3.426,
+      "yaw": 75.3786
+    },
+    "Căn_studio": {
+      "panorama": "1tNEiJFgrIr7pk3rguuIP_uu022lkaspS",
+      "hotSpots": [
+        {
+          "pitch": -1.5728,
+          "yaw": -173.4757,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "WC_căn_studio",
+          "text": "WC căn studio"
+        },
+        {
+          "pitch": -1.3398,
+          "yaw": 178.835,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_khách_căn_2_ngủ",
+          "text": "Phòng khách căn 2 ngủ"
+        },
+        {
+          "pitch": -1.5728,
+          "yaw": -177.9029,
+          "type": "info",
+          "cssClass": "ThongTin",
+          "text": "Cửa này thông ra sảnh chung và từ sảnh chung có thể sang căn 2 ngủ"
+        }
+      ],
+      "pitch": -2.2718,
+      "yaw": -156.233
+    },
+    "Phòng_ngủ_master": {
+      "panorama": "1IF9woiqyCP9Jfp8yeuhy202kblPmUyex",
+      "hotSpots": [
+        {
+          "pitch": 4.9515,
+          "yaw": -125.9417,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "WC_phòng_ngủ_master",
+          "text": "WC phòng ngủ master"
+        },
+        {
+          "pitch": 5.1845,
+          "yaw": -119.4175,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_khách_căn_2_ngủ",
+          "text": "Phòng khách căn 2 ngủ"
+        }
+      ]
+    },
+    "Ban_công": {
+      "panorama": "10C4fQw6qphu1dvkFecynAWyPhfhJLkgU",
+      "hotSpots": [
+        {
+          "pitch": -0.4078,
+          "yaw": -19.2233,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Căn_studio",
+          "text": "Căn studio"
+        },
+        {
+          "pitch": -1.5728,
+          "yaw": -81.9029,
+          "type": "info",
+          "cssClass": "ThongTin",
+          "text": "Cửa bếp thông ra ban công giúp thoát mùi hiệu quả."
+        },
+        {
+          "pitch": -4.1359,
+          "yaw": 32.0388,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "WC_chung",
+          "text": "WC chung"
+        },
+        {
+          "pitch": -1.3398,
+          "yaw": 44.6214,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_master",
+          "text": "Phòng ngủ master"
+        },
+        {
+          "pitch": 1.6893,
+          "yaw": 37.165,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_nhỏ",
+          "text": "Phòng ngủ nhỏ"
+        },
+        {
+          "pitch": -9.0291,
+          "yaw": -7.1068,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_khách_căn_2_ngủ",
+          "text": "Phòng khách căn 2 ngủ"
+        }
+      ],
+      "pitch": -50.2609,
+      "yaw": -173.7087
+    },
+    "Phòng_ngủ_nhỏ": {
+      "panorama": "1YYpoMHKz3AaL0AgVql4epZyHtbLs32WT",
+      "hotSpots": [
+        {
+          "pitch": -2.9709,
+          "yaw": 171.1456,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_khách_căn_2_ngủ",
+          "text": "Phòng khách căn 2 ngủ"
+        }
+      ],
+      "pitch": -2.2718,
+      "yaw": -86.7961
+    },
+    "WC_căn_studio": {
+      "panorama": "1L-XdQkEwsfv0wPdI8I8894ztZPzvrioK",
+      "hotSpots": [
+        {
+          "pitch": -16.2524,
+          "yaw": 141.5534,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Căn_studio",
+          "text": "Căn studio"
+        }
+      ],
+      "pitch": -6.233,
+      "yaw": -3.3786
+    },
+    "WC_chung": {
+      "panorama": "1tZeBJAvpOPbnkuoKb7uFoLjrwMG--AYH",
+      "hotSpots": [
+        {
+          "pitch": 3.7864,
+          "yaw": -178.3689,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_khách_căn_2_ngủ",
+          "text": "Phòng khách căn 2 ngủ"
+        }
+      ],
+      "pitch": -0.6408,
+      "yaw": -16.1942
+    },
+    "WC_phòng_ngủ_master": {
+      "panorama": "16QCxoGPJW-e3wsmrSfVS6tocTWTplO2R",
+      "hotSpots": [
+        {
+          "pitch": -0.8629,
+          "yaw": 45.5534,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_master",
+          "text": "Phòng ngủ master"
+        }
+      ],
+      "pitch": -6.466,
+      "yaw": 9.9029
+    }
+  }
+}

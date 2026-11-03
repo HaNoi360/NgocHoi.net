@@ -1,0 +1,167 @@
+{
+  "info": {
+    "area": "",
+    "price": "",
+    "note": ""
+  },
+  "default": {
+    "firstScene": "Phòng_khách",
+    "autoLoad": true,
+    "autoRotate": 8
+  },
+  "scenes": {
+    "Phòng_khách": {
+      "panorama": "119qC0Ij4iQ4pDVbnpUmCj27t4x_P0xyH",
+      "hotSpots": [
+        {
+          "pitch": 3.8361,
+          "yaw": -9.2459,
+          "type": "info",
+          "cssClass": "ThongTin",
+          "text": "Cửa 1,5 cánh chống cháy 60 phút kèm khóa 5 chức năng."
+        },
+        {
+          "pitch": 0.2951,
+          "yaw": -146.5574,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Ban_công",
+          "text": "Ban công"
+        },
+        {
+          "pitch": -1.2787,
+          "yaw": -30.8852,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_master",
+          "text": "Phòng ngủ master"
+        },
+        {
+          "pitch": -2.459,
+          "yaw": -168.5902,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_nhỏ",
+          "text": "Phòng ngủ nhỏ"
+        },
+        {
+          "pitch": -1.2787,
+          "yaw": -1.377,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "WC_phòng_khách",
+          "text": "WC phòng khách"
+        }
+      ],
+      "pitch": -5.534,
+      "yaw": -142.0194
+    },
+    "Ban_công": {
+      "panorama": "1QoVwujnu7KW85w4hSwxH8i6Q55RI5pAp",
+      "hotSpots": [
+        {
+          "pitch": -7.9672,
+          "yaw": -151.2787,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_master",
+          "text": "Phòng ngủ master"
+        },
+        {
+          "pitch": -6.3934,
+          "yaw": -48.5902,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_nhỏ",
+          "text": "Phòng ngủ nhỏ"
+        },
+        {
+          "pitch": -6.3934,
+          "yaw": -104.8525,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_khách",
+          "text": "Phòng khách"
+        }
+      ],
+      "pitch": -3.2039,
+      "yaw": 173.0097
+    },
+    "WC_phòng_khách": {
+      "panorama": "1odJlH1kjAVZtlvXC-a2PgSIaDivcu34L",
+      "hotSpots": [
+        {
+          "pitch": -9.2512,
+          "yaw": 9.6699,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_khách",
+          "text": "Phòng khách"
+        }
+      ],
+      "pitch": -5.6066,
+      "yaw": -177.2459
+    },
+    "Phòng_ngủ_nhỏ": {
+      "panorama": "1Hq3OALDnhz3N7B3hni1ipB75i0UY3KeM",
+      "hotSpots": [
+        {
+          "pitch": 2.3993,
+          "yaw": 8.7379,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_khách",
+          "text": "Phòng khách"
+        }
+      ],
+      "pitch": 2.6557,
+      "yaw": -157.1803
+    },
+    "Phòng_ngủ_master": {
+      "panorama": "1snXkU5WcFWMWFHnzsm4IIEPBc8D7U_60",
+      "hotSpots": [
+        {
+          "pitch": -2.2609,
+          "yaw": -4.7767,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_khách",
+          "text": "Phòng khách"
+        },
+        {
+          "pitch": -10.8823,
+          "yaw": -103.8058,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "WC_phòng_ngủ_master",
+          "text": "WC phòng ngủ master"
+        },
+        {
+          "pitch": -0.8629,
+          "yaw": 108.699,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Ban_công",
+          "text": "Ban công"
+        }
+      ],
+      "pitch": -4.4262,
+      "yaw": 153.2459
+    },
+    "WC_phòng_ngủ_master": {
+      "panorama": "1sOiH-Rd38T1IBpXkgy7wNJ_toPnvS2he",
+      "hotSpots": [
+        {
+          "pitch": -3.2039,
+          "yaw": -2.2136,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "WC_phòng_ngủ_master",
+          "text": "WC phòng ngủ master"
+        }
+      ],
+      "pitch": -6.7869,
+      "yaw": -165.0492
+    }
+  }
+}

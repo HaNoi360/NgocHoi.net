@@ -1,0 +1,212 @@
+{
+  "info": {
+    "area": "",
+    "price": "",
+    "note": ""
+  },
+  "default": {
+    "firstScene": "Phòng_khách",
+    "autoLoad": true,
+    "autoRotate": 8
+  },
+  "scenes": {
+    "Phòng_khách": {
+      "panorama": "1FPqkteIg2ILu7VVVIocynzWYMziDbq07",
+      "hotSpots": [
+        {
+          "pitch": 0,
+          "yaw": -126,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_nhỏ",
+          "text": "Phòng ngủ nhỏ"
+        },
+        {
+          "pitch": -7.1538,
+          "yaw": -4.8462,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Ban_công",
+          "text": "Ban công"
+        },
+        {
+          "pitch": -4.6019,
+          "yaw": 73.7476,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_master_01",
+          "text": "Phòng ngủ master 01"
+        },
+        {
+          "pitch": -2.9709,
+          "yaw": 158.7961,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_master_02",
+          "text": "Phòng ngủ master 02"
+        },
+        {
+          "pitch": 0.2913,
+          "yaw": -137.5922,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "WC_chung",
+          "text": "WC chung"
+        },
+        {
+          "pitch": 0.2913,
+          "yaw": -130.3689,
+          "type": "info",
+          "cssClass": "ThongTin",
+          "text": "Cửa 1,5 cánh, chống cháy, với 5 chức năng bảo vệ."
+        }
+      ],
+      "pitch": -7.3981,
+      "yaw": -11.068
+    },
+    "Ban_công": {
+      "panorama": "1Fko454A0H3VCjBeIv6m2J_V6uA7C12hZ",
+      "hotSpots": [
+        {
+          "pitch": -9.6923,
+          "yaw": -4.6154,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_khách",
+          "text": "Phòng khách"
+        },
+        {
+          "pitch": 0.9903,
+          "yaw": 28.0777,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_nhỏ",
+          "text": "Phòng ngủ nhỏ"
+        },
+        {
+          "pitch": 0.2913,
+          "yaw": -39.4951,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_master_01",
+          "text": "Phòng ngủ master 01"
+        },
+        {
+          "pitch": -0.1748,
+          "yaw": -13.165,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_master_02",
+          "text": "Phòng ngủ master 02"
+        },
+        {
+          "pitch": 0.9903,
+          "yaw": 22.2524,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "WC_chung",
+          "text": "WC chung"
+        }
+      ],
+      "pitch": -41.7692,
+      "yaw": 176.7692
+    },
+    "Phòng_ngủ_master_01": {
+      "panorama": "1nSUmegbT-7Tb8gsLo8Vsv34lTRc1fYdH",
+      "hotSpots": [
+        {
+          "pitch": -4.3689,
+          "yaw": 172.7767,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "WC_trong_phòng_ngủ_master_01",
+          "text": "WC trong phòng ngủ master 01"
+        },
+        {
+          "pitch": -2.0388,
+          "yaw": -147.8447,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_khách",
+          "text": "Phòng khách"
+        },
+        {
+          "pitch": -23.2427,
+          "yaw": 21.7864,
+          "type": "info",
+          "cssClass": "ThongTin",
+          "text": "Kính Low-E 2 lớp giúp chống tia UV, cách nhiệt, cách âm... hiệu quả."
+        }
+      ],
+      "pitch": -11.3592,
+      "yaw": 25.9806
+    },
+    "WC_trong_phòng_ngủ_master_01": {
+      "panorama": "1XCIqvuufPMVya-mzJc_ZDRg-cuyC6b-v",
+      "hotSpots": [
+        {
+          "pitch": -2.2609,
+          "yaw": 171.1456,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_ngủ_master_01",
+          "text": "Phòng ngủ master 01"
+        }
+      ],
+      "pitch": -14.0769,
+      "yaw": -0.4615
+    },
+    "Phòng_ngủ_nhỏ": {
+      "panorama": "1nT7MyGqPOHEnvZ1pXhxaZVDyT3c_SF6l",
+      "hotSpots": [
+        {
+          "pitch": -1.0959,
+          "yaw": 148.0777,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_khách",
+          "text": "Phòng khách"
+        }
+      ],
+      "pitch": -4.6154,
+      "yaw": -135.6923
+    },
+    "WC_chung": {
+      "panorama": "1A88mQfWV6NIr_8tX-o6505PL4RV0eRHN",
+      "hotSpots": [
+        {
+          "pitch": 1.4672,
+          "yaw": 127.1068,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_khách",
+          "text": "Phòng khách"
+        }
+      ],
+      "pitch": 9.9231,
+      "yaw": -95.0769
+    },
+    "Phòng_ngủ_master_02": {
+      "panorama": "1VI8hBGhORXTqZ27SGKOc2RALiMvBAUVu",
+      "hotSpots": [
+        {
+          "pitch": -2.3077,
+          "yaw": -65.0769,
+          "type": "scene",
+          "cssClass": "",
+          "sceneId": "Phòng_khách",
+          "text": "Phòng khách"
+        },
+        {
+          "pitch": -1.5728,
+          "yaw": 51.6117,
+          "type": "info",
+          "cssClass": "ThongTin",
+          "text": "Lối ra logia 2"
+        }
+      ],
+      "pitch": -2.5049,
+      "yaw": 0.3495
+    }
+  }
+}

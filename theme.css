@@ -1,0 +1,113 @@
+/* =====================================================================
+   THEME.CSS — BẢNG MÀU & PHÔNG CHỮ CỦA APP (chỉ cần sửa file này)
+   MẶC ĐỊNH = GIAO DIỆN SÁNG (nền kem ngà, chữ đậm, nhấn đồng sẫm) — dễ đọc khi ra ngoài nắng.
+   Nhân bản sang chương trình khác: sửa các giá trị trong khối :root bên dưới,
+   hoặc chọn nhanh một bảng màu có sẵn bằng thuộc tính data-theme ở thẻ <html> trong index.html:
+        <html lang="vi" data-theme="sang-ngoc">
+   Xem thử mà không cần sửa file: thêm ?theme=sang-ngoc vào địa chỉ, ví dụ  index.html?theme=sang-ngoc
+   Màu viết dạng 3 số "R G B" (cách nhau bằng dấu cách, 0–255) để CSS tạo được các độ trong suốt.
+   Chỗ cần sửa NGOÀI file này (không chỉnh được bằng CSS): thẻ <meta name="theme-color"> trong index.html
+   (App tự cập nhật lúc chạy theo --ink, nên thường không phải sửa). Màu trong manifest.json cũng được App tự lấy từ --ink khi cài.
+   ===================================================================== */
+
+:root {
+  /* --- Màu nền & chữ của App (giao diện SÁNG) --- */
+  --ink-rgb:   250 247 241;  /* Nền chính, nền khung App (kem ngà) */
+  --ink2-rgb:  241 234 220;  /* Nền các section xen kẽ (.alt) */
+  --brass-rgb: 130 86 16;    /* Màu nhấn: đường kẻ, nút, tiêu đề phụ, viền chọn (đồng sẫm) */
+  --bone-rgb:  33 30 26;     /* Màu chữ chính (nâu đen) */
+  --strong:    #0f0d0a;      /* Chữ nhấn mạnh / tiêu đề đang chọn */
+  --letterbox: #e8e2d4;      /* Viền hai bên khi màn hình không đúng tỉ lệ khung App */
+
+  /* --- Chữ nằm trên ảnh (dải parallax "Bước vào từng căn hộ"…, nút/danh sách cảnh trong khung 360°) --- */
+  --on-photo:  #ffffff;      /* Màu chữ trên ảnh */
+  --plx-rgb:   0 0 0;        /* Màu lớp phủ trên ảnh parallax (đen nhẹ để chữ trắng luôn đọc rõ dưới nắng) */
+  --plx-a1:    .5;           /* Độ đậm lớp phủ phía trên (0 = không phủ, 1 = đặc) */
+  --plx-a2:    .62;          /* Độ đậm lớp phủ phía dưới */
+  --scheme:    light;        /* light = ô nhập/thanh cuộn của trình duyệt theo nền sáng; normal = để mặc định */
+
+  /* --- Thẻ sáng (màn hình "Đang chuẩn bị ứng dụng") --- */
+  --card-bg:     #ffffff;
+  --card-ink:    #12292b;
+  --card-muted:  #5d7476;
+  --card-track:  #e3ecec;
+  --card-line:   #b8c8c8;
+  --card-accent: #164447;
+
+  /* --- Giao diện "Website cài đặt" (trang có nút Tạo App, không phải giao diện khách) --- */
+  --brand:    #164447;
+  --accent:   #e5765b;
+  --site-bg:  #f4f7f7;
+
+  /* --- Phông chữ (đổi tên phông ở đây; muốn phông mới phải thêm @font-face và tệp .woff2 trong app.css, thư mục fonts/) --- */
+  --font-body:    "Be Vietnam Pro", system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Cormorant Garamond", Georgia, serif;
+}
+
+/* ---- Các biến phía dưới tự tính từ màu ở trên, KHÔNG cần sửa ---- */
+:root {
+  --ink:   rgb(var(--ink-rgb));
+  --ink2:  rgb(var(--ink2-rgb));
+  --brass: rgb(var(--brass-rgb));
+  --bone:  rgb(var(--bone-rgb));
+  --brand-dark: color-mix(in srgb, var(--brand) 82%, #000);
+  color-scheme: var(--scheme);
+}
+
+/* =====================================================================
+   BẢNG MÀU CÓ SẴN — dùng bằng data-theme="tên"  (mặc định: "sang" = kem ngà & đồng sẫm, khai báo ở trên)
+   ===================================================================== */
+
+/* ---- GIAO DIỆN SÁNG ---- */
+
+/* Kem ngà & đồng sẫm  ->  data-theme="sang"  (giống mặc định) */
+:root[data-theme="sang"] { }
+
+/* Trắng ngọc & xanh ngọc đậm  ->  data-theme="sang-ngoc" */
+:root[data-theme="sang-ngoc"] {
+  --ink-rgb: 247 250 249;  --ink2-rgb: 232 241 239;  --brass-rgb: 14 94 90;  --bone-rgb: 18 36 38;
+  --strong: #07181a;  --letterbox: #dde8e6;
+  --brand: #164447;  --accent: #0e5e5a;  --card-accent: #164447;
+}
+
+/* Trắng băng & xanh navy  ->  data-theme="sang-navy" */
+:root[data-theme="sang-navy"] {
+  --ink-rgb: 247 249 252;  --ink2-rgb: 231 237 246;  --brass-rgb: 28 62 128;  --bone-rgb: 20 28 44;
+  --strong: #0a111f;  --letterbox: #dfe5ef;
+  --brand: #0b1830;  --accent: #1c3e80;  --card-accent: #0b1830;
+}
+
+/* ---- GIAO DIỆN TỐI (bảng màu cũ) — các bảng dưới đây dùng chung 3 dòng cài đặt này ---- */
+:root[data-theme="toi"], :root[data-theme="ruou-vang"], :root[data-theme="navy"], :root[data-theme="rung-xanh"], :root[data-theme="than-chi"] {
+  --strong: #ffffff;  --letterbox: #000000;
+  --on-photo: rgb(var(--bone-rgb));  --plx-rgb: var(--ink-rgb);  --plx-a1: .45;  --plx-a2: .6;  --scheme: normal;
+}
+
+/* Xanh đen & vàng đồng (bảng tối gốc)  ->  data-theme="toi" */
+:root[data-theme="toi"] {
+  --ink-rgb: 16 34 43;  --ink2-rgb: 23 48 57;  --brass-rgb: 184 138 68;  --bone-rgb: 241 236 226;
+}
+
+/* Đỏ rượu vang & vàng champagne  ->  data-theme="ruou-vang" */
+:root[data-theme="ruou-vang"] {
+  --ink-rgb: 38 14 22;  --ink2-rgb: 56 22 32;  --brass-rgb: 205 168 98;  --bone-rgb: 246 238 228;
+  --brand: #4a1a26;  --accent: #cda862;  --card-accent: #4a1a26;
+}
+
+/* Xanh navy & vàng  ->  data-theme="navy" */
+:root[data-theme="navy"] {
+  --ink-rgb: 11 24 48;  --ink2-rgb: 19 37 70;  --brass-rgb: 214 177 92;  --bone-rgb: 236 240 247;
+  --brand: #0b1830;  --accent: #d6b15c;  --card-accent: #0b1830;
+}
+
+/* Xanh rừng & đồng  ->  data-theme="rung-xanh" */
+:root[data-theme="rung-xanh"] {
+  --ink-rgb: 14 36 28;  --ink2-rgb: 22 52 40;  --brass-rgb: 198 152 82;  --bone-rgb: 241 239 227;
+  --brand: #0e2a21;  --accent: #c69852;  --card-accent: #0e2a21;
+}
+
+/* Than chì & cam đất  ->  data-theme="than-chi" */
+:root[data-theme="than-chi"] {
+  --ink-rgb: 28 30 34;  --ink2-rgb: 40 43 49;  --brass-rgb: 224 130 84;  --bone-rgb: 238 238 236;
+  --brand: #1c1e22;  --accent: #e08254;  --card-accent: #1c1e22;
+}

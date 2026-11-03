@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#faf7f1">
+  <meta name="description" content="Thư viện tour panorama 360 độ hoạt động offline">
+  <script>
+    // Quyết định giao diện ngay từ đầu để không bị nháy: App cho khách (mặc định) hay trang cài đặt (?admin=1).
+    (function () { try {
+      var q = new URLSearchParams(location.search);
+      if (q.get("theme")) document.documentElement.setAttribute("data-theme", q.get("theme")); // xem thử bảng màu: ?theme=ruou-vang
+      if (q.get("admin") !== "1") document.documentElement.classList.add("app-mode"); // mặc định: App cho khách; trang cài đặt = ?admin=1
+    } catch (e) {} })();
+  </script>
+  <script src="./config.js?v=r36"></script>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icons/icon-192.png">
+  <meta name="theme-color" content="#faf7f1">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="NgocHoi.net">
+  <link rel="stylesheet" href="./vendor/bootstrap.min.css" crossorigin="anonymous" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css'">
+  <link rel="stylesheet" href="./vendor/pannellum.css" crossorigin="anonymous" onerror="this.onerror=null;this.href='https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css'">
+  <title>NgocHoi.net</title>
+  <link rel="stylesheet" href="./theme.css?v=r36">
+  <link rel="stylesheet" href="./app.css?v=r36">
+  <style>
+     body { background:var(--site-bg); }
+    .navbar { background:var(--brand); }
+    .btn-brand { background:var(--brand); color:#fff; }
+    .btn-brand:hover { background:var(--brand-dark); color:#fff; }
+    #panorama { width:100%; height:min(62vh,720px); min-height:300px; background:#111; border-radius:1rem; overflow:hidden; }
+    .scene-row { border:1px solid #dee2e6; border-radius:.7rem; padding:.65rem; }
+    .small-muted { color:#6c757d; font-size:.875rem; }
+    .status-dot { display:inline-block;width:.6rem;height:.6rem;border-radius:50%;background:#999;margin-right:.35rem; }
+    .status-dot.ok { background:#198754; }
+    .status-dot.bad { background:#dc3545; }
+    .tour-card { cursor:pointer; }
+    .tour-card.active { border:2px solid var(--brand); }
+    .progress { height:.7rem; }
+    @media (max-width:767px) { #panorama { height:54vh; min-height:260px; } }
+  </style>
+</head>
+<body>
+<div id="siteRoot">
+<nav class="navbar navbar-dark">
+  <div class="container-fluid">
+    <span class="navbar-brand mb-0 h1">◉ Panorama Tours Offline</span>
+    <span id="netStatus" class="text-white small">Đang kiểm tra…</span>
+  </div>
+</nav>
+
+<main class="container-fluid py-3">
+  <div class="card mb-3 border-0 shadow-sm" id="appCard">
+    <div class="card-body">
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <div>
+          <h2 class="h5 mb-1">Tạo App offline</h2>
+          <div id="appHint" class="small-muted">Tự động tải toàn bộ ảnh của tất cả tour về máy và cài ứng dụng lên thiết bị.</div>
+        </div>
+        <button id="createApp" class="btn btn-brand btn-lg">⬇ Tạo App</button>
+      </div>
+      <div id="appProgressWrap" class="mt-3 d-none">
+        <div class="progress" style="height:1.1rem"><div id="appProgress" class="progress-bar progress-bar-striped progress-bar-animated" style="width:0%">0%</div></div>
+      </div>
+      <div id="appStatus" class="small-muted mt-2"></div>
+      <div class="mt-2"><a class="small" href="./index.html">👁 Xem giao diện App dành cho khách</a></div>
+    </div>
+  </div>
+  <div class="row g-3">
+    <section class="col-12 col-xl-8">
+      <div id="panorama"></div>
+      <div class="d-flex flex-wrap align-items-center gap-2 mt-2">
+        <button id="backToTour" class="btn btn-outline-secondary btn-sm" disabled>Về danh sách cảnh</button>
+        <span id="viewerMessage" class="small-muted">Chọn tour, tải ảnh rồi mở tour để xem.</span>
+      </div>
+      <div class="card mt-3">
+        <div class="card-body">
+          <div class="d-flex justify-content-between flex-wrap gap-2 align-items-center">
+            <div>
+              <h2 class="h6 mb-1">Bộ nhớ thiết bị</h2>
+              <div id="storageText" class="small-muted">Đang kiểm tra…</div>
+            </div>
+            <button id="refreshStorage" class="btn btn-outline-secondary btn-sm">Cập nhật</button>
+          </div>
+          <div class="progress mt-2"><div id="storageBar" class="progress-bar" style="width:0%"></div></div>
+          <div class="small-muted mt-2">Dung lượng quota do trình duyệt báo chỉ là ước tính. Hãy thử offline thực tế trước khi sử dụng.</div>
+        </div>
+      </div>
+    </section>
+
+    <aside class="col-12 col-xl-4">
+      <div class="card mb-3">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center gap-2">
+            <h1 class="h5 mb-0">Danh sách tour</h1>
+            <button id="syncTours" class="btn btn-outline-secondary btn-sm">Đồng bộ tour</button>
+          </div>
+          <p class="small-muted mt-2 mb-2">Tour được khai báo trong <code>tours/index.json</code>. Mỗi tour giữ nguyên cấu trúc Panellum của anh.</p>
+          <div id="tourList" class="d-grid gap-2"></div>
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-body">
+          <h2 class="h6">Tour đang chọn</h2>
+          <div id="selectedTourName" class="fw-semibold">Chưa chọn tour</div>
+          <div id="tourProgressText" class="small-muted mt-1">—</div>
+          <div class="d-flex flex-wrap gap-2 mt-3">
+            <button id="downloadTour" class="btn btn-brand btn-sm" disabled>Tải ảnh tour này</button>
+            <button id="openTour" class="btn btn-outline-primary btn-sm" disabled>Mở tour offline</button>
+          </div>
+          <div id="downloadStatus" class="small-muted mt-2" aria-live="polite">Kết nối Internet để đồng bộ và tải ảnh lần đầu.</div>
+          <div id="downloadProgressWrap" class="progress mt-2 d-none"><div id="downloadProgress" class="progress-bar progress-bar-striped progress-bar-animated" style="width:0%">0%</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center gap-2">
+            <h2 class="h6 mb-0">Các cảnh trong tour</h2>
+            <button id="deleteTour" class="btn btn-outline-danger btn-sm" disabled>Xóa ảnh tour</button>
+          </div>
+          <input id="sceneSearch" type="search" class="form-control form-control-sm mt-2" placeholder="Tìm cảnh…">
+          <div id="sceneList" class="d-grid gap-2 mt-2"></div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<footer class="container-fluid py-3">
+  <div class="small-muted">Để offline hoàn toàn, cần tải đủ ảnh của tour và cache thư viện ứng dụng khi còn Internet. Ảnh chưa tải sẽ không mở được khi offline.</div>
+</footer>
+
+</div><!-- /siteRoot -->
+
+<div id="appRoot">
+<div class="frame">
+<main class="scroller" id="scroller">
+
+<section class="plx hero" data-img="hero">
+  <h1 class="visually-hidden">Giới thiệu dự án</h1>
+  <button id="btnStart" class="btn-start" type="button" aria-label="Bắt đầu">Bắt đầu</button>
+</section>
+
+<nav id="menu" aria-label="Menu chính">
+  <button id="menuToggle" class="menu-toggle" type="button" aria-expanded="false" aria-controls="menuLinks">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    <span id="menuLabel">Menu</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+  </button>
+  <div class="menu-links" id="menuLinks">
+    <a class="nav-link nav-survey" href="#khao-sat">Khảo sát</a>
+    <a class="nav-link" href="#tong-quan">Tổng quan</a>
+    <a class="nav-link" href="#tham-quan">360°</a>
+    <a class="nav-link" href="#chu-dau-tu">Chủ đầu tư</a>
+    <a class="nav-link" href="#vi-tri">Tiềm năng tăng giá</a>
+    <a class="nav-link" href="#tien-ich">Tận hưởng cuộc sống</a>
+    <a class="nav-link" href="#mat-bang">Mặt bằng</a>
+    <a class="nav-link" href="#ban-giao" data-fold>Tiêu chuẩn bàn giao</a>
+    <a class="nav-link" href="#chinh-sach" data-fold>Chính sách bán hàng</a>
+    <a class="nav-link" href="#dang-ky">Đăng ký</a>
+  </div>
+  <div class="fs-ctl" role="group" aria-label="Cỡ chữ">
+    <button id="fsDown" type="button" aria-label="Giảm cỡ chữ" style="font-size:13px">A−</button>
+    <button id="fsReset" type="button" aria-label="Khôi phục cỡ chữ mặc định">100%</button>
+    <button id="fsUp" type="button" aria-label="Tăng cỡ chữ" style="font-size:19px">A+</button>
+  </div>
+</nav>
+
+<section id="khao-sat" class="panel"><div class="container-fluid">
+  <small class="tag sv-tag">Khảo sát 1/2</small>
+  <h2>Nguồn biết đến dự án</h2><div class="rule"></div>
+  <p class="lead-line" id="svQ1">Anh/chị biết về dự án Greenera Southmark qua nguồn nào?</p>
+  <p class="muted sv-hint">Có thể chọn nhiều nguồn. Chọn “Chưa biết” nếu đây là lần đầu anh/chị biết đến dự án.</p>
+  <div class="sv-opts" id="svSource" role="group" aria-labelledby="svQ1"><label class="sv-opt"><input class="form-check-input" type="checkbox" name="source" value="Chưa biết" data-none><span>Chưa biết</span></label><label class="sv-opt"><input class="form-check-input" type="checkbox" name="source" value="Quảng cáo trên mạng xã hội"><span>Quảng cáo trên mạng xã hội</span></label><label class="sv-opt"><input class="form-check-input" type="checkbox" name="source" value="Quảng cáo ở thang máy"><span>Quảng cáo ở thang máy</span></label><label class="sv-opt"><input class="form-check-input" type="checkbox" name="source" value="Quảng cáo trên thân xe ô tô"><span>Quảng cáo trên thân xe ô tô</span></label><label class="sv-opt"><input class="form-check-input" type="checkbox" name="source" value="Quảng cáo trên đường"><span>Quảng cáo trên đường</span></label><label class="sv-opt"><input class="form-check-input" type="checkbox" name="source" value="Tờ rơi"><span>Tờ rơi</span></label><label class="sv-opt"><input class="form-check-input" type="checkbox" name="source" value="Nhân viên tư vấn trực tiếp"><span>Nhân viên tư vấn trực tiếp</span></label><label class="sv-opt"><input class="form-check-input" type="checkbox" name="source" value="Bạn bè"><span>Bạn bè</span></label><label class="sv-opt"><input class="form-check-input" type="checkbox" name="source" value="Đi ngang qua dự án"><span>Đi ngang qua dự án</span></label><label class="sv-opt"><input class="form-check-input" type="checkbox" name="source" value="Khác" data-other><span>Khác</span></label></div>
+  <input id="svOther" class="form-control d-none mt-3" type="text" maxlength="200" placeholder="Anh/chị vui lòng ghi rõ nguồn khác" aria-label="Nguồn khác">
+</div></section>
+
+<section id="khao-sat-2" class="panel alt"><div class="container-fluid">
+  <small class="tag sv-tag">Khảo sát 2/2</small>
+  <h2>Cảm nhận về dự án</h2><div class="rule"></div>
+  <p class="lead-line" id="svQ2">Anh/chị có ấn tượng với điều gì ở dự án Greenera Southmark?</p>
+  <p class="muted sv-hint">Có thể chọn nhiều ý.</p>
+  <div class="sv-opts" id="svImpress" role="group" aria-labelledby="svQ2"><label class="sv-opt"><input class="form-check-input" type="checkbox" name="impress" value="Diện tích căn hộ lớn"><span>Diện tích căn hộ lớn</span></label><label class="sv-opt"><input class="form-check-input" type="checkbox" name="impress" value="Tiêu chuẩn bàn giao cao cấp"><span>Tiêu chuẩn bàn giao cao cấp</span></label><label class="sv-opt"><input class="form-check-input" type="checkbox" name="impress" value="Giá rẻ so với các sản phẩm cùng phân khúc"><span>Giá rẻ so với các sản phẩm cùng phân khúc</span></label><label class="sv-opt"><input class="form-check-input" type="checkbox" name="impress" value="Vị trí đặc biệt thuận lợi"><span>Vị trí đặc biệt thuận lợi</span></label><label class="sv-opt"><input class="form-check-input" type="checkbox" name="impress" value="Tiềm năng tăng giá cực cao"><span>Tiềm năng tăng giá cực cao</span></label><label class="sv-opt"><input class="form-check-input" type="checkbox" name="impress" value="Khả năng cho thuê tạo dòng tiền vượt trội"><span>Khả năng cho thuê tạo dòng tiền vượt trội</span></label></div>
+
+  <p class="lead-line" id="svQ3" style="margin-top:2.5rem">Anh/chị vui lòng sắp xếp mức độ ưu tiên nếu chọn mua căn hộ tại Greenera Southmark:</p>
+  <p class="muted sv-hint">Giữ biểu tượng ⠿ bên phải rồi kéo lên/xuống để sắp xếp: mục trên cùng là số 1 (quan trọng nhất).</p>
+  <div class="sv-rank" id="svRank" role="group" aria-labelledby="svQ3"><div class="sv-rk" data-v="Để tận hưởng cuộc sống cao cấp" tabindex="0"><b class="n" aria-hidden="true">1</b><span>Để tận hưởng cuộc sống cao cấp</span><i class="grip" aria-label="Giữ và kéo để đổi vị trí">⠿</i></div><div class="sv-rk" data-v="Để cho thuê tạo nguồn thu nhập thụ động đều đặn và bền vững" tabindex="0"><b class="n" aria-hidden="true">1</b><span>Để cho thuê tạo nguồn thu nhập thụ động đều đặn và bền vững</span><i class="grip" aria-label="Giữ và kéo để đổi vị trí">⠿</i></div><div class="sv-rk" data-v="Tích sản" tabindex="0"><b class="n" aria-hidden="true">1</b><span>Tích sản</span><i class="grip" aria-label="Giữ và kéo để đổi vị trí">⠿</i></div><div class="sv-rk" data-v="Chờ tăng lãi vốn" tabindex="0"><b class="n" aria-hidden="true">1</b><span>Chờ tăng lãi vốn</span><i class="grip" aria-label="Giữ và kéo để đổi vị trí">⠿</i></div></div>
+  <button type="button" class="link-btn mt-3" id="svRankReset">Đặt lại thứ tự</button>
+</div></section>
+
+<section id="tong-quan" class="panel"><div class="container-fluid">
+  <h2>Greenera Southmark<span class="h2-sub">486 - Ngọc Hồi - Hà Nội</span></h2><div class="rule"></div>
+  <img class="photo mb-4" data-img="tongquan" alt="Phối cảnh tổng thể Greenera Southmark">
+  <p class="lead-line">Dự án cao cấp đầu tiên định hình phong cách sống hạng sang phía Nam Hà Nội.</p>
+  <p class="muted">Dự án tiên phong đưa chuẩn sống xanh quốc tế về phía Nam Hà Nội – cam kết dài hạn về chất lượng sống bền vững, nơi mọi giá trị tương lai được nuôi dưỡng từ từng khoảnh khắc. <i>Embrace the moment – Sống giá trị từng khoảnh khắc.</i></p>
+  <div class="pol-tabs" role="tablist" aria-label="Tổng quan dự án">
+    <button class="pol-tab" type="button" role="tab" id="tqt-cx" aria-controls="tqp-cx" aria-selected="true">Chứng nhận EDGE cấp độ 1</button>
+    <button class="pol-tab" type="button" role="tab" id="tqt-qm" aria-controls="tqp-qm" aria-selected="false">Quy mô</button>
+    <button class="pol-tab" type="button" role="tab" id="tqt-tt" aria-controls="tqp-tt" aria-selected="false">Thông tin</button>
+  </div>
+  <div class="pol-pane on" id="tqp-cx" role="tabpanel">
+  <div class="cx" data-cx="edge"></div>
+    <h4>Chuẩn xanh EDGE cấp độ 1</h4>
+  <p class="muted">Greenera Southmark là dự án đầu tiên ở phía Nam Hà Nội đáp ứng bộ tiêu chí EDGE cấp độ 1 – tiêu chuẩn công trình xanh hàng đầu thế giới, do Tổ chức Tài chính Quốc tế (IFC) cấp chứng chỉ. Cư dân hưởng lợi kép về sức khỏe, tinh thần và hiệu quả kinh tế trong dài hạn.</p>
+  <div class="tbl-wrap"><table class="tbl-kv">
+    <caption>Hiệu quả theo tiêu chuẩn EDGE</caption>
+    <tbody>
+      <tr><th scope="row">Tiết kiệm năng lượng</th><td>23,17%</td></tr>
+      <tr><th scope="row">Giảm tiêu thụ nước</th><td>30,89%</td></tr>
+      <tr><th scope="row">Tối ưu vật liệu</th><td>22%</td></tr>
+    </tbody>
+  </table></div>
+  <p class="muted mt-4 mb-2"><b>Xanh từ “lõi” cho tương lai bền vững</b> – cùng hướng tới Net Zero, bắt đầu từ lựa chọn vật liệu và thiết bị xanh:</p>
+  <ul class="dots muted">
+    <li><b>Gỗ công nghiệp MDF:</b> tuổi thọ sản phẩm dài, hạn chế thay mới nên giảm phát thải CO₂; chỉ số phát thải Formaldehyde thấp, an toàn cho sức khỏe.</li>
+    <li><b>Gạch không nung:</b> tiết kiệm tài nguyên, sản xuất không sinh ra chất gây ô nhiễm, cách nhiệt tốt.</li>
+    <li><b>Kính hộp Low-E:</b> cách âm, cách nhiệt trên 90%, giảm tối đa tia hồng ngoại, tia cực tím.</li>
+    <li><b>Sơn tường nội ngoại thất:</b> chống chịu tốt, tăng tuổi thọ lớp sơn; kháng tia UV, cách nhiệt cao, tiết kiệm điện năng và giảm phát thải CO₂.</li>
+  </ul>
+  </div>
+  <div class="pol-pane" id="tqp-qm" role="tabpanel">
+  <div class="tbl-wrap"><table class="tbl-kv">
+    <caption>Quy mô dự án</caption>
+    <tbody>
+      <tr><th scope="row">Tổng diện tích</th><td>24.282 m²</td></tr>
+      <tr><th scope="row">Số căn hộ</th><td>830 căn</td></tr>
+      <tr><th scope="row">Số tòa</th><td>3 tòa: IVY · Lavish · Seren</td></tr>
+      <tr><th scope="row">Quy mô xây dựng</th><td>25–30 tầng</td></tr>
+      <tr><th scope="row">Mật độ xây dựng</th><td>33,1%</td></tr>
+      <tr><th scope="row">Pháp lý sở hữu</th><td>Lâu dài</td></tr>
+    </tbody>
+  </table></div>
+  </div>
+  <div class="pol-pane" id="tqp-tt" role="tabpanel">
+  <div class="tbl-wrap"><table class="tbl-kv">
+    <tbody>
+      <tr><th scope="row">Vị trí</th><td>486 Ngọc Hồi, Thanh Trì, Hà Nội</td></tr>
+      <tr><th scope="row">Loại hình sản phẩm</th><td>Căn hộ cao cấp · Căn hộ sân vườn · Căn hộ Duplex · Shophouse</td></tr>
+      <tr><th scope="row">Chủ đầu tư</th><td>CTCP Tổng Bách Hóa</td></tr>
+      <tr><th scope="row">Đơn vị phát triển dự án</th><td>Tân Hoàng Minh Group</td></tr>
+      <tr><th scope="row">Tư vấn chiến lược &amp; triển khai bán hàng</th><td>Ramond Holdings</td></tr>
+      <tr><th scope="row">Tư vấn &amp; thiết kế kiến trúc cảnh quan</th><td>Stellar Corp.</td></tr>
+      <tr><th scope="row">Tư vấn &amp; thiết kế kết cấu</th><td>CT TNHH CCU</td></tr>
+      <tr><th scope="row">Thiết kế cơ điện</th><td>Tân Hoàng Minh Group</td></tr>
+      <tr><th scope="row">Tổng thầu xây dựng</th><td>Delta Group</td></tr>
+      <tr><th scope="row">Pháp lý</th><td>Sở hữu lâu dài</td></tr>
+    </tbody>
+  </table></div>
+  </div>
+</div></section>
+
+<section class="plx" data-img="plx4"><div class="display">Bước vào từng căn hộ</div></section>
+
+<section id="tham-quan" class="panel"><div class="container-fluid">
+  <h2>Tham quan 360°</h2><div class="rule"></div>
+  <p class="muted mb-4">Chạm vào một tour để bắt đầu trải nghiệm toàn cảnh 360°.</p>
+  <div id="tourBox"></div>
+  <p id="appVersion" class="muted mt-4 mb-0" style="font-size:.75rem;opacity:.5"></p>
+</div></section>
+
+<section class="plx" data-img="plx1"><div class="display">Không gian sống xanh<br/>giữa lòng thành phố</div></section>
+
+<section id="chu-dau-tu" class="panel alt"><div class="container-fluid">
+  <h2>Chủ đầu tư</h2><div class="rule"></div>
+  <img class="photo mb-4" data-img="chudautu" alt="Tập đoàn Tân Hoàng Minh">
+  <p class="lead-line">Tân Hoàng Minh – biểu tượng bất động sản hàng hiệu cao cấp tại Việt Nam.</p>
+  <p class="muted">Hơn 30 năm kiến tạo những công trình hạng sang và siêu sang mang giá trị vượt thời gian.</p>
+  <blockquote class="quote">“Không xây nhà – Chúng tôi kiến tạo di sản.”</blockquote>
+  <div class="row g-3">
+    <div class="col-6"><div class="fact"><b>1993</b><span>Năm thành lập</span></div></div>
+    <div class="col-6"><div class="fact"><b>30+</b><span>Năm phát triển</span></div></div>
+  </div>
+  <div class="chips mt-4">
+    <span class="chip">Chất lượng vượt trội</span><span class="chip">Thiết kế độc bản</span><span class="chip">Vị trí kim cương</span><span class="chip">Giá trị bền vững</span>
+  </div>
+  <div class="cx" data-cx="cdt"></div>
+</div></section>
+
+<section class="plx" data-img="plx2"><div class="display">Kết nối mọi hướng di chuyển</div></section>
+
+<section id="vi-tri" class="panel"><div class="container-fluid">
+  <h2>Tiềm năng tăng giá</h2><div class="rule"></div>
+  <img class="photo mb-4" style="aspect-ratio:4/3" data-img="vitri" alt="Bản đồ vị trí dự án">
+  <p class="lead-line mb-0">486 Ngọc Hồi, Thanh Trì, Hà Nội</p>
+  <div class="cx" data-cx="vitri"></div>
+</div></section>
+
+<section class="plx" data-img="plx7"><div class="display">Sống giữa thiên nhiên,<br/>trọn vẹn tiện ích</div></section>
+
+<section id="tien-ich" class="panel alt"><div class="container-fluid">
+  <h2>Tận hưởng cuộc sống</h2><div class="rule"></div>
+  <p class="muted">Tổng mặt bằng tiện ích gồm 27 hạng mục ngoài trời (09–35), 8 tiện ích trong nhà (01–08), bãi đỗ xe, cửa hầm để xe và khu trường mẫu giáo trong khuôn viên.</p>
+  <img class="photo mb-4" style="aspect-ratio:4/3" data-img="tienichmb" data-w="1200" data-h="900" alt="Tổng mặt bằng tiện ích">
+  <div class="pol-tabs" role="tablist" aria-label="Tiện ích">
+    <button class="pol-tab" type="button" role="tab" id="tit-ng" aria-controls="tip-ng" aria-selected="true">Tiện ích bên ngoài</button>
+    <button class="pol-tab" type="button" role="tab" id="tit-tr" aria-controls="tip-tr" aria-selected="false">Tiện ích bên trong</button>
+  </div>
+  <div class="pol-pane on" id="tip-ng" role="tabpanel">
+  <div class="chips">
+    <span class="chip"><i>09</i>Quảng trường</span>
+    <span class="chip"><i>10</i>Đài phun nước</span>
+    <span class="chip"><i>11</i>Suối Harmonia</span>
+    <span class="chip"><i>12</i>Artwork</span>
+    <span class="chip"><i>13</i>Gym ngoài trời</span>
+    <span class="chip"><i>14</i>Sân Pickle ball</span>
+    <span class="chip"><i>15</i>Sân bóng rổ</span>
+    <span class="chip"><i>16</i>Bồn cây kết hợp ghế nghỉ</span>
+    <span class="chip"><i>17</i>Cầu Lumis</span>
+    <span class="chip"><i>18</i>Vườn thư giãn</span>
+    <span class="chip"><i>19</i>Chòi nghỉ Rhythm</span>
+    <span class="chip"><i>20</i>Lala Camping BBQ</span>
+    <span class="chip"><i>21</i>Đường dạo cảnh quan</span>
+    <span class="chip"><i>22</i>Sân chơi liên hoàn</span>
+    <span class="chip"><i>23</i>Vườn khô</span>
+    <span class="chip"><i>24</i>Cầu Sunset</span>
+    <span class="chip"><i>25</i>Sân chơi nước</span>
+    <span class="chip"><i>26</i>Xích đu</span>
+    <span class="chip"><i>27</i>Vườn nghỉ</span>
+    <span class="chip"><i>28</i>Không gian đa năng</span>
+    <span class="chip"><i>29</i>Khu ghế nghỉ công cộng</span>
+    <span class="chip"><i>30</i>Vườn cây cổ thụ</span>
+    <span class="chip"><i>31</i>Vườn dạo</span>
+    <span class="chip"><i>32</i>Bãi cỏ đa năng</span>
+    <span class="chip"><i>33</i>Gym ngoài trời</span>
+    <span class="chip"><i>34</i>Sân chơi trẻ em</span>
+    <span class="chip"><i>35</i>Cổng chào</span>
+  </div>
+    <p class="muted mt-3 mb-0"><b>Hạng mục khác:</b> đỗ xe ngoài trời · cửa hầm để xe · trường mẫu giáo · đất hạ tầng kỹ thuật.</p>
+    <div class="cx" data-cx="ngoai"></div>
+  </div>
+  <div class="pol-pane" id="tip-tr" role="tabpanel">
+  <div class="chips">
+    <span class="chip"><i>01</i>Bể bơi bốn mùa</span>
+    <span class="chip"><i>02</i>Gym</span>
+    <span class="chip"><i>03</i>Kid Cafe</span>
+    <span class="chip"><i>04</i>Gaming Zone</span>
+    <span class="chip"><i>05</i>Tổ hợp Aerobic &amp; Yoga</span>
+    <span class="chip"><i>06</i>Sinh hoạt cộng đồng</span>
+    <span class="chip"><i>07</i>Khu thư giãn</span>
+    <span class="chip"><i>08</i>Khu đọc sách</span>
+  </div>
+    <div class="cx" data-cx="trong"></div>
+  </div>
+  <p class="note">Hình ảnh là phối cảnh minh họa. Thông tin, thông số mang tính chất tham khảo, có thể thay đổi không báo trước.</p>
+</div></section>
+
+<section class="plx" data-img="plx3"><div class="display">Tối ưu từng mét vuông</div></section>
+
+<section id="mat-bang" class="panel"><div class="container-fluid">
+  <h2>Mặt bằng</h2><div class="rule"></div>
+  <p class="muted">Dự án gồm 3 tòa: IVY (SM1), Lavish (SM2) và Seren (SM3). Chạm vào ảnh mặt bằng để phóng to.</p>
+  <div class="acc" id="mbAcc">
+  <div class="acc-item on" id="mba-lv">
+    <button class="acc-head" type="button" id="mbt-lv" aria-controls="mbp-lv" aria-expanded="true"><span><small class="tag">Tòa SM2</small><b>Lavish – Hồng tâm đất giá</b></span><svg class="acc-chev" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+    <div class="acc-body" id="mbp-lv" role="region" aria-labelledby="mbt-lv"><div class="bldg">
+    <img class="photo mb-3" style="aspect-ratio:4/3" data-zoom data-img="mb_lavish" data-w="1600" data-h="1200" alt="Mặt bằng tòa Lavish">
+    <small class="tag">Tòa SM2 · Mặt bằng</small>
+    <div class="cx" data-cx="bocmai_sm2"></div>
+    <div class="pol-tabs sub-tabs" role="tablist" aria-label="Thông tin tòa Lavish">
+      <button class="pol-tab" type="button" role="tab" id="lvt-ts" aria-controls="lvp-ts" aria-selected="true">Thông số</button>
+      <button class="pol-tab" type="button" role="tab" id="lvt-dt" aria-controls="lvp-dt" aria-selected="false">Diện tích điển hình</button>
+    </div>
+    <div class="pol-pane on" id="lvp-ts" role="tabpanel">
+    <div class="tbl-wrap"><table class="tbl-kv">
+      <caption>Thông số tòa Lavish</caption>
+      <tbody>
+        <tr><th scope="row">Diện tích căn hộ</th><td>78 m² – 290 m²</td></tr>
+        <tr><th scope="row">Số tầng</th><td>30 tầng</td></tr>
+        <tr><th scope="row">Số căn mỗi sàn</th><td>12 căn/sàn</td></tr>
+        <tr><th scope="row">Số căn hộ</th><td>324 căn</td></tr>
+        <tr><th scope="row">Loại căn hộ</th><td>2PN · 3PN · 4PN · 3PN Dual-key · 3PN sân vườn · 4PN sân vườn · Duplex</td></tr>
+        <tr><th scope="row">Thang máy</th><td>8 thang máy, tỷ lệ 1,5 căn/thang máy</td></tr>
+        <tr><th scope="row">Cửa căn hộ</th><td>Cửa 1,5 cánh, chống cháy 60 phút, thiết kế và sản xuất giới hạn</td></tr>
+      </tbody>
+    </table></div>
+    </div>
+    <div class="pol-pane" id="lvp-dt" role="tabpanel">
+    <p class="muted mb-2">Diện tích căn hộ điển hình – tầng 3 đến 28</p>
+    <div class="tbl-wrap"><table class="tbl-kv tbl-3">
+    <thead><tr><th>Loại căn</th><th>Trục</th><th>Tim tường</th><th>Thông thủy</th></tr></thead>
+    <tbody>
+      <tr><td>2PN</td><td>09-10-11-12</td><td>85,0 m²</td><td>78,6 m²</td></tr>
+      <tr><td>3PN Dual-key</td><td>01</td><td>133,2 m²</td><td>124,5 m²</td></tr>
+      <tr><td>3PN</td><td>04-05</td><td>138,5 m²</td><td>129,4 m²</td></tr>
+      <tr><td>3PN sân vườn</td><td>08</td><td>132,7 m²</td><td>124,7 m²</td></tr>
+      <tr><td>4PN</td><td>03-06</td><td>156,4 m²</td><td>146,3 m²</td></tr>
+      <tr><td>4PN sân vườn</td><td>02-07</td><td>155,3 m²</td><td>145,2 m²</td></tr>
+    </tbody>
+  </table></div>
+    </div>
+  </div></div>
+  </div>
+  <div class="acc-item" id="mba-sr">
+    <button class="acc-head" type="button" id="mbt-sr" aria-controls="mbp-sr" aria-expanded="false"><span><small class="tag">Tòa SM3</small><b>Seren – Nơi an trú bình yên &amp; trọn vẹn cảm hứng</b></span><svg class="acc-chev" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+    <div class="acc-body" id="mbp-sr" role="region" aria-labelledby="mbt-sr"><div class="bldg">
+    <img class="photo mb-3" style="aspect-ratio:4/3" data-zoom data-img="mb_seren" data-w="1600" data-h="1200" alt="Mặt bằng tòa Seren">
+    <small class="tag">Tòa SM3 · Mặt bằng</small>
+    <p class="muted mb-2">Tòa tháp căn hộ mang cảm hứng nghỉ dưỡng: riêng tư nhưng không bỏ lỡ những kết nối giá trị, yên bình nhưng không xa rời nhịp phồn hoa.</p>
+    <div class="cx" data-cx="bocmai_sm3"></div>
+    <div class="pol-tabs sub-tabs" role="tablist" aria-label="Thông tin tòa Seren">
+      <button class="pol-tab" type="button" role="tab" id="srt-ts" aria-controls="srp-ts" aria-selected="true">Thông số</button>
+      <button class="pol-tab" type="button" role="tab" id="srt-dt" aria-controls="srp-dt" aria-selected="false">Diện tích điển hình</button>
+    </div>
+    <div class="pol-pane on" id="srp-ts" role="tabpanel">
+    <div class="tbl-wrap"><table class="tbl-kv">
+      <caption>Thông số tòa Seren</caption>
+      <tbody>
+        <tr><th scope="row">Diện tích căn hộ</th><td>47 m² – 111 m²</td></tr>
+        <tr><th scope="row">Số tầng</th><td>25 tầng</td></tr>
+        <tr><th scope="row">Số căn mỗi sàn</th><td>12 căn/sàn</td></tr>
+        <tr><th scope="row">Số căn hộ</th><td>276 căn</td></tr>
+        <tr><th scope="row">Loại căn hộ</th><td>1PN · 2PN · 3PN · 2PN sân vườn</td></tr>
+      </tbody>
+    </table></div>
+    </div>
+    <div class="pol-pane" id="srp-dt" role="tabpanel">
+    <p class="muted mb-2">Diện tích căn hộ điển hình – tầng 3 đến 25</p>
+    <div class="tbl-wrap"><table class="tbl-kv tbl-3">
+    <thead><tr><th>Loại căn</th><th>Trục</th><th>Tim tường</th><th>Thông thủy</th></tr></thead>
+    <tbody>
+      <tr><td>1PN</td><td>11-06</td><td>51,4 m²</td><td>47,0 m²</td></tr>
+      <tr><td>2PN</td><td>02-03-08-09</td><td>82,7 m²</td><td>76,3 m²</td></tr>
+      <tr><td>2PN sân vườn</td><td>12-05</td><td>95,1 m²</td><td>88,4 m²</td></tr>
+      <tr><td>3PN</td><td>01-04</td><td>119,0 m²</td><td>111,0 m²</td></tr>
+      <tr><td>3PN</td><td>10-07</td><td>106,5 m²</td><td>98,6 m²</td></tr>
+    </tbody>
+  </table></div>
+    </div>
+  </div></div>
+  </div>
+  </div>
+  <p class="note">Các thông tin, thông số mang tính chất tham khảo, có thể thay đổi không báo trước. Thông tin chính thức theo văn bản ký kết giữa chủ đầu tư và khách hàng. Hình ảnh là phối cảnh minh họa.</p>
+</div></section>
+
+<section id="ban-giao" class="panel alt" data-fold hidden><div class="container-fluid">
+  <h2>Tiêu chuẩn bàn giao</h2><div class="rule"></div>
+  <p class="muted">Căn hộ điển hình tòa Lavish (SM2). Chủ đầu tư: CTCP Tổng Bách Hóa · Đơn vị tư vấn &amp; phát triển: Ramond Holdings. Chạm vào từng hạng mục để xem chi tiết.</p>
+  <div class="pol-tabs" role="tablist" aria-label="Tiêu chuẩn bàn giao">
+    <button class="pol-tab" type="button" role="tab" id="bt-ht" aria-controls="bp-ht" aria-selected="true">Hoàn thiện (liền tường &amp; sân vườn)</button>
+    <button class="pol-tab" type="button" role="tab" id="bt-tho" aria-controls="bp-tho" aria-selected="false">Bàn giao thô</button>
+  </div>
+  <div class="pol-pane on" id="bp-ht" role="tabpanel">
+<details class="bg-grp" open><summary>I. SÀN</summary><div class="tbl-wrap"><table class="tbl-kv tbl-3 tbl-bg"><thead><tr><th>Khoản mục</th><th>Vật liệu &amp; thiết bị</th><th>Nhãn hiệu / Nhà cung cấp</th></tr></thead><tbody><tr><td>Phòng khách, phòng ngủ, lối đi</td><td>- Gỗ công nghiệp cao cấp<br>- Len chân tường cùng loại<small>Quy cách: Theo thiết kế</small></td><td>Wilson (NSX Wilson Hòa Bình); Newsky (NSX Phương Trung); Hansol (NSX Bisson) hoặc sản phẩm tương đương trong nước / nhập khẩu</td></tr><tr><td>Sàn khu vực bếp</td><td>Gạch granite chống trơn<small>Quy cách: Theo thiết kế</small></td><td>Changyih, Taicera, Viglacera hoặc sản phẩm tương đương trong nước / nhập khẩu</td></tr><tr><td>Khu vệ sinh</td><td>Gạch granite chống trơn<small>Quy cách: Theo thiết kế</small></td><td>Changyih, Taicera, Viglacera hoặc sản phẩm tương đương trong nước / nhập khẩu</td></tr><tr><td>Logia</td><td>- Gạch bán sứ porcelain chống trơn<br>- Len chân tường cùng loại<small>Quy cách: Theo thiết kế</small></td><td>Changyih, Taicera, Viglacera hoặc sản phẩm tương đương trong nước / nhập khẩu</td></tr></tbody></table></div></details>
+<details class="bg-grp"><summary>II. TƯỜNG</summary><div class="tbl-wrap"><table class="tbl-kv tbl-3 tbl-bg"><thead><tr><th>Khoản mục</th><th>Vật liệu &amp; thiết bị</th><th>Nhãn hiệu / Nhà cung cấp</th></tr></thead><tbody><tr><td>Phòng khách, ăn, bếp</td><td>Trát, bả, sơn nước hoàn thiện<small>Quy cách: Màu sắc và vật liệu theo thiết kế nội thất</small></td><td>Sơn Valspar, Nippon, Jotun hoặc tương đương</td></tr><tr><td>Phòng ngủ</td><td>Trát, bả, sơn nước hoàn thiện<small>Quy cách: Màu sắc và vật liệu theo thiết kế nội thất</small></td><td>Sơn Valspar, Nippon, Jotun hoặc tương đương</td></tr><tr><td>Phòng vệ sinh</td><td>Gạch granite<small>Quy cách: Màu sắc và vật liệu theo thiết kế nội thất</small></td><td>Changyih, Taicera, Viglacera hoặc sản phẩm tương đương trong nước / nhập khẩu</td></tr><tr><td>Logia</td><td>Trát, sơn nước hoàn thiện<small>Quy cách: Màu sắc và vật liệu theo thiết kế nội thất</small></td><td>Sơn Valspar, Nippon, Jotun hoặc tương đương</td></tr></tbody></table></div></details>
+<details class="bg-grp"><summary>III. TRẦN</summary><div class="tbl-wrap"><table class="tbl-kv tbl-3 tbl-bg"><thead><tr><th>Khoản mục</th><th>Vật liệu &amp; thiết bị</th><th>Nhãn hiệu / Nhà cung cấp</th></tr></thead><tbody><tr><td>Khu vực bếp, vệ sinh</td><td>Trần thạch cao, sơn bả hoàn thiện<small>Quy cách: Tấm thạch cao chống ẩm. Màu sắc và vật liệu theo thiết kế nội thất</small></td><td>- Trần &amp; khung xương: Vĩnh Tường, Boral/ Knauf / Zinca Pro hoặc tương đương<br>- Sơn Valspar, Nippon, Jotun hoặc tương đương</td></tr><tr><td>Phòng khách, lối đi, phòng ngủ</td><td>Trần thạch cao, sơn bả hoàn thiện<small>Quy cách: Màu sắc và vật liệu theo thiết kế nội thất</small></td><td>- Trần &amp; khung xương: Vĩnh Tường, Boral/ Knauf / Zinca Pro hoặc tương đương<br>- Sơn Valspar, Nippon, Jotun hoặc tương đương</td></tr><tr><td>Logia</td><td>Trần sơn bả theo thiết kế<small>Quy cách: Trần sơn bả theo thiết kế</small></td><td>Sơn Valspar, Nippon, Jotun hoặc tương đương</td></tr></tbody></table></div></details>
+<details class="bg-grp"><summary>IV. CỬA ĐI VÀ CỬA SỔ</summary><div class="tbl-wrap"><table class="tbl-kv tbl-3 tbl-bg"><thead><tr><th>Khoản mục</th><th>Vật liệu &amp; thiết bị</th><th>Nhãn hiệu / Nhà cung cấp</th></tr></thead><tbody><tr class="grp"><th colspan="3" scope="colgroup">Cửa đi chính vào nhà</th></tr><tr><td>Cửa gỗ</td><td>Gỗ công nghiệp cao cấp, chống cháy<small>Quy cách: Theo thiết kế và đảm bảo tiêu chuẩn PCCC</small></td><td>Gỗ An Cường, Formica, Minh Long hoặc sản phẩm tương đương trong nước/ nhập khẩu</td></tr><tr><td>Thiết bị</td><td>Khóa thông minh nhập khẩu: 5 tính năng (check bằng mã số, thẻ từ, vân tay, chìa key, Face ID &amp; khả năng kết nối điện thoại)</td><td>Khóa nhập khẩu: Bosch, Hafele, Kaadas hoặc tương đương</td></tr><tr><td>Phụ kiện</td><td>Bản lề, tay co, mắt thần</td><td>Hafele, King Ku, Immundex, Draho hoặc sản phẩm tương đương trong nước/ nhập khẩu</td></tr><tr class="grp"><th colspan="3" scope="colgroup">Cửa ngăn phòng</th></tr><tr><td>Cửa gỗ</td><td>Gỗ công nghiệp cao cấp<small>Quy cách: Theo thiết kế nội thất</small></td><td>Gỗ An Cường, Formica, Minh Long hoặc sản phẩm tương đương trong nước/ nhập khẩu</td></tr><tr><td>Phụ kiện</td><td>Bản lề, tay nắm<small>Quy cách: Theo thiết kế nội thất</small></td><td>Hafele, King Ku, Immundex, Draho hoặc sản phẩm tương đương trong nước/ nhập khẩu</td></tr><tr class="grp"><th colspan="3" scope="colgroup">Cửa phòng vệ sinh</th></tr><tr><td>Cửa gỗ</td><td>Gỗ công nghiệp cao cấp, chống ẩm<small>Quy cách: Theo thiết kế nội thất</small></td><td>Gỗ An Cường, Formica, Minh Long hoặc sản phẩm tương đương trong nước/ nhập khẩu</td></tr><tr><td>Phụ kiện</td><td>Bản lề, tay nắm<small>Quy cách: Theo thiết kế nội thất</small></td><td>Hafele, King Ku, Immundex, Draho hoặc nhập khẩu tương đương</td></tr><tr class="grp"><th colspan="3" scope="colgroup">Cửa sổ, cửa đi logia</th></tr><tr><td>Cánh cửa</td><td>Khung nhôm, Kính hộp Low-E<small>Quy cách: Theo thiết kế</small></td><td>Eurowindow, BM Window, Ngọc Diệp, Sunspace, Sinh Nam Mental hoặc sản phẩm tương đương trong nước/ nhập khẩu</td></tr><tr><td>Phụ kiện cửa</td><td>Bản lề, tay nắm<small>Quy cách: Theo thiết kế</small></td><td>Hafele, Kin Long, Draho, hoặc sản phẩm tương đương trong nước/ nhập khẩu</td></tr></tbody></table></div></details>
+<details class="bg-grp"><summary>V. BẾP</summary><div class="tbl-wrap"><table class="tbl-kv tbl-3 tbl-bg"><thead><tr><th>Khoản mục</th><th>Vật liệu &amp; thiết bị</th><th>Nhãn hiệu / Nhà cung cấp</th></tr></thead><tbody><tr class="grp"><th colspan="3" scope="colgroup">Tủ bếp</th></tr><tr><td>Tủ</td><td>Tủ gỗ công nghiệp cao cấp<small>Quy cách: Theo thiết kế nội thất</small></td><td>Gỗ An Cường, Formica, Minh Long hoặc sản phẩm tương đương trong nước/ nhập khẩu</td></tr><tr><td>Mặt bàn bếp</td><td>Đá nhân tạo hoặc đá Granite<small>Quy cách: Theo thiết kế nội thất</small></td><td>Đá nhân tạo: Vicostone hoặc nhập khẩu tương đương hoặc đá Granite nhập khẩu tương đương</td></tr><tr><td>Phụ kiện bếp</td><td>Bản lề, giá bát<small>Quy cách: Theo thiết kế nội thất</small></td><td>Hafele, Cariny, Blum hoặc sản phẩm tương đương trong nước/ nhập khẩu</td></tr><tr class="grp"><th colspan="3" scope="colgroup">Thiết bị bếp</th></tr><tr><td>Bếp từ, hút mùi</td><td><small>Quy cách: Theo thiết kế nội thất</small></td><td>Hafele, Electrolux, Fagor, Brandt hoặc nhập khẩu tương đương</td></tr><tr><td>Chậu, vòi rửa</td><td><small>Quy cách: Theo thiết kế nội thất</small></td><td>Hafele, Teka, Grohe hoặc sản phẩm tương đương trong nước/ nhập khẩu</td></tr><tr><td>Bình nóng lạnh</td><td><small>Quy cách: Theo thiết kế nội thất</small></td><td>Ferroli, Ariston hoặc sản phẩm tương đương trong nước/ nhập khẩu</td></tr><tr class="grp"><th colspan="3" scope="colgroup">Cấp điện, cấp thoát nước</th></tr><tr><td>Cấp điện</td><td>Đầu chờ cấp điện theo thiết kế<small>Quy cách: Theo thiết kế</small></td><td>Ổ cắm, công tắc: Schneider, Hager, Legrand, Panasonic hoặc sản phẩm tương đương trong nước/ nhập khẩu<br>Cáp điện: LS Vina, Cadivi, Taisin/VN hoặc sản phẩm tương đương trong nước/ nhập khẩu</td></tr><tr><td>Cấp nước</td><td>Đường cấp nước ống PPR<small>Quy cách: Theo thiết kế</small></td><td>Tiền Phong, Đệ Nhất, Bình Minh hoặc sản phẩm tương đương trong nước/ nhập khẩu</td></tr><tr><td>Thoát nước</td><td>Đường ống thoát nước uPVC<small>Quy cách: Theo thiết kế</small></td><td>Tiền Phong, Đệ Nhất, Bình Minh hoặc sản phẩm tương đương trong nước/ nhập khẩu</td></tr></tbody></table></div></details>
+<details class="bg-grp"><summary>VI. THIẾT BỊ VỆ SINH</summary><div class="tbl-wrap"><table class="tbl-kv tbl-3 tbl-bg"><thead><tr><th>Khoản mục</th><th>Vật liệu &amp; thiết bị</th><th>Nhãn hiệu / Nhà cung cấp</th></tr></thead><tbody><tr><td>Chậu rửa, bồn cầu, vòi rửa, vòi sen tắm, vòi xịt</td><td>Thiết bị vệ sinh<small>Quy cách: Theo thiết kế</small></td><td>Grohe, Toto, Axent &amp; Innoci nhập khẩu hoặc sản phẩm tương đương trong nước/ nhập khẩu</td></tr><tr><td>Vách tắm đứng</td><td>Kính cường lực<small>Quy cách: Theo thiết kế</small></td><td>Việt Nhật, Hải Long, Hồng Phúc hoặc sản phẩm tương đương trong nước/ nhập khẩu</td></tr><tr><td>Phụ kiện vách tắm</td><td>Phụ kiện<small>Quy cách: Theo thiết kế</small></td><td>Phụ kiện: Kin Long, Imundex, Amg hoặc tương đương</td></tr><tr><td>Bình nóng lạnh</td><td>Cấp nước nóng cục bộ cho từng WC, bình nóng lạnh chậu rửa của bếp<small>Quy cách: Theo thiết kế</small></td><td>Ariston, Ferroli hoặc tương đương</td></tr></tbody></table></div></details>
+<details class="bg-grp"><summary>VII. NỘI THẤT</summary><div class="tbl-wrap"><table class="tbl-kv tbl-3 tbl-bg"><thead><tr><th>Khoản mục</th><th>Vật liệu &amp; thiết bị</th><th>Nhãn hiệu / Nhà cung cấp</th></tr></thead><tbody><tr class="grp"><th colspan="3" scope="colgroup">Tủ lavabo &amp; gương</th></tr><tr><td>Tủ</td><td>Tủ gỗ công nghiệp cao cấp, chống ẩm<small>Quy cách: Theo thiết kế nội thất</small></td><td>An Cường, Formica, Minh Long hoặc sản phẩm tương đương trong nước/ nhập khẩu</td></tr><tr><td>Phụ kiện &amp; gương</td><td><small>Quy cách: Theo thiết kế nội thất</small></td><td>Hafele, Cariny, Blum hoặc tương đương</td></tr><tr class="grp"><th colspan="3" scope="colgroup">Tủ quần áo (phòng ngủ chính)</th></tr><tr><td>Tủ gỗ</td><td>Gỗ công nghiệp cao cấp<small>Quy cách: Theo thiết kế nội thất</small></td><td>An Cường, Formica, Minh Long hoặc sản phẩm tương đương trong nước/ nhập khẩu</td></tr><tr><td>Phụ kiện</td><td>—</td><td>Hafele, Cariny, Blum hoặc sản phẩm tương đương trong nước/ nhập khẩu</td></tr></tbody></table></div></details>
+<details class="bg-grp"><summary>VIII. THIẾT BỊ ĐIỆN NHẸ</summary><div class="tbl-wrap"><table class="tbl-kv tbl-3 tbl-bg"><thead><tr><th>Khoản mục</th><th>Vật liệu &amp; thiết bị</th><th>Nhãn hiệu / Nhà cung cấp</th></tr></thead><tbody><tr><td>Đèn chiếu sáng</td><td><small>Quy cách: Theo thiết kế</small></td><td>Fawookidi, Duhal, AC hoặc sản phẩm tương đương trong nước/ nhập khẩu</td></tr><tr><td>Ổ cắm điện thoại, internet, truyền hình</td><td><small>Quy cách: Theo thiết kế</small></td><td>Schneider, Panasonic, Hager, Legrand hoặc tương đương</td></tr><tr><td>Ổ cắm, công tắc điện</td><td><small>Quy cách: Theo thiết kế</small></td><td>Schneider, Panasonic, Hager, Legrand hoặc tương đương</td></tr><tr><td>Hệ thống video doorphone</td><td><small>Quy cách: Chuông cửa kết nối xuống tầng 1; màn hình</small></td><td>Panasonic, Comax, Aiphone/ Châu Á hoặc sản phẩm tương đương trong nước/ nhập khẩu</td></tr></tbody></table></div></details>
+<details class="bg-grp"><summary>IX. ĐIỀU HÒA KHÔNG KHÍ</summary><div class="tbl-wrap"><table class="tbl-kv tbl-3 tbl-bg"><thead><tr><th>Khoản mục</th><th>Vật liệu &amp; thiết bị</th><th>Nhãn hiệu / Nhà cung cấp</th></tr></thead><tbody><tr><td>Điều hòa</td><td><small>Quy cách: Điều hòa âm trần, 2 chiều</small></td><td>Mitsubishi Heavy, Toshiba, LG, Samsung hoặc tương đương</td></tr></tbody></table></div></details>
+<details class="bg-grp"><summary>X. PHÒNG CHÁY, CHỮA CHÁY</summary><div class="tbl-wrap"><table class="tbl-kv tbl-3 tbl-bg"><thead><tr><th>Khoản mục</th><th>Vật liệu &amp; thiết bị</th><th>Nhãn hiệu / Nhà cung cấp</th></tr></thead><tbody><tr><td>Phòng khách, phòng ngủ</td><td>Đầu báo cháy và chữa cháy đến từng phòng theo thiết kế được phê duyệt<small>Quy cách: Theo thiết kế PCCC</small></td><td>Notifier / Honeywell / Hochiki hoặc tương đương</td></tr><tr><td>Phòng bếp</td><td>Đầu báo cháy và chữa cháy đến từng phòng theo thiết kế được phê duyệt<small>Quy cách: Theo thiết kế PCCC</small></td><td>Notifier / Honeywell / Hochiki hoặc tương đương</td></tr></tbody></table></div></details>
+<details class="bg-grp"><summary>XI. LAN CAN, LOUVER</summary><div class="tbl-wrap"><table class="tbl-kv tbl-3 tbl-bg"><thead><tr><th>Khoản mục</th><th>Vật liệu &amp; thiết bị</th><th>Nhãn hiệu / Nhà cung cấp</th></tr></thead><tbody><tr><td>Lan can logia phòng khách</td><td>Kính cường lực hoàn thiện theo thiết kế<small>Quy cách: Kính cường lực</small></td><td>Việt Nhật, Hải Long, Hồng Phúc hoặc nhập khẩu</td></tr><tr><td>Louver</td><td>Louver kim loại sơn tĩnh điện/ sơn epoxy theo thiết kế<small>Quy cách: Sơn epoxy/ sơn tĩnh điện</small></td><td>—</td></tr></tbody></table></div></details>
+<h4>Lưu ý</h4><ul class="pl muted"><li>Danh mục vật liệu bàn giao có thể được thay đổi hoặc điều chỉnh, bao gồm loại hình, quy cách &amp; thương hiệu, với cam kết sử dụng các lựa chọn tương đương về chất lượng.</li><li>Thông số chính thức &amp; chi tiết sẽ được quy định trong Hợp đồng Mua Bán.</li></ul></div>
+  <div class="pol-pane" id="bp-tho" role="tabpanel">
+<details class="bg-grp" open><summary>I. SÀN</summary><div class="tbl-wrap"><table class="tbl-kv tbl-3 tbl-bg"><thead><tr><th>Khoản mục</th><th>Vật liệu &amp; thiết bị</th><th>Nhãn hiệu / Nhà cung cấp</th></tr></thead><tbody><tr><td>Phòng khách, phòng ngủ, lối đi, bếp</td><td>Sàn bê tông cốt thép (đã cán lớp làm phẳng)<small>Quy cách: Theo thiết kế</small></td><td>—</td></tr><tr><td>Khu vệ sinh</td><td>Sàn bê tông cốt thép (đã phủ lớp chống thấm, đã cán nền)<small>Quy cách: Theo thiết kế</small></td><td>—</td></tr><tr><td>Logia</td><td>Sàn bê tông cốt thép (đã phủ lớp chống thấm, đã cán nền)<small>Quy cách: Theo thiết kế</small></td><td>—</td></tr></tbody></table></div></details>
+<details class="bg-grp"><summary>II. TƯỜNG</summary><div class="tbl-wrap"><table class="tbl-kv tbl-3 tbl-bg"><thead><tr><th>Khoản mục</th><th>Vật liệu &amp; thiết bị</th><th>Nhãn hiệu / Nhà cung cấp</th></tr></thead><tbody><tr><td>Không gian bên trong</td><td>Trát mặt trong tường bao<br>Tường ngăn trong căn hộ và khu vệ sinh: không trát</td><td>—</td></tr><tr><td>Logia</td><td>Trát, bả, sơn nước hoàn thiện<small>Quy cách: Màu sắc và vật liệu theo thiết kế nội thất</small></td><td>Sơn Valspar, Nippon, Jotun hoặc tương đương</td></tr></tbody></table></div></details>
+<details class="bg-grp"><summary>III. TRẦN</summary><div class="tbl-wrap"><table class="tbl-kv tbl-3 tbl-bg"><thead><tr><th>Khoản mục</th><th>Vật liệu &amp; thiết bị</th><th>Nhãn hiệu / Nhà cung cấp</th></tr></thead><tbody><tr><td>Không gian bên trong</td><td>Trần bê tông cốt thép (không trát)</td><td>—</td></tr><tr><td>Logia</td><td>Trần sơn bả theo thiết kế<small>Quy cách: Trần sơn bả theo thiết kế</small></td><td>Sơn Valspar, Nippon, Jotun hoặc tương đương</td></tr></tbody></table></div></details>
+<details class="bg-grp"><summary>IV. CỬA ĐI VÀ CỬA SỔ</summary><div class="tbl-wrap"><table class="tbl-kv tbl-3 tbl-bg"><thead><tr><th>Khoản mục</th><th>Vật liệu &amp; thiết bị</th><th>Nhãn hiệu / Nhà cung cấp</th></tr></thead><tbody><tr class="grp"><th colspan="3" scope="colgroup">Cửa đi chính vào nhà</th></tr><tr><td>Cửa gỗ</td><td>Gỗ công nghiệp chống cháy<small>Quy cách: Theo thiết kế và đảm bảo tiêu chuẩn PCCC</small></td><td>Gỗ An Cường, Formica, Minh Long hoặc nhập khẩu tương đương</td></tr><tr><td>Thiết bị</td><td>Khóa thông minh nhập khẩu: 5 tính năng (check bằng mã số, thẻ từ, vân tay, chìa key, Face ID &amp; khả năng kết nối điện thoại)</td><td>Khóa nhập khẩu: Bosch, Hafele, Kaadas hoặc tương đương</td></tr><tr><td>Phụ kiện</td><td>Bản lề, tay co, mắt thần</td><td>Hafele, King Ku, Immundex, Draho hoặc nhập khẩu tương đương</td></tr><tr class="grp"><th colspan="3" scope="colgroup">Không gian bên trong</th></tr><tr><td>Cửa ngăn phòng, cửa khu vệ sinh</td><td>Không cung cấp</td><td>—</td></tr><tr class="grp"><th colspan="3" scope="colgroup">Cửa sổ, cửa đi logia</th></tr><tr><td>Cánh cửa</td><td>Khung nhôm, Kính hộp Low-E<small>Quy cách: Theo thiết kế</small></td><td>Eurowindow, BM Window, Ngọc Diệp, Sunspace, Sinh Nam Mental hoặc nhập khẩu tương đương</td></tr><tr><td>Phụ kiện cửa</td><td>Bản lề, tay nắm<small>Quy cách: Theo thiết kế</small></td><td>Hafele, Kin Long, Draho, hoặc nhập khẩu tương đương</td></tr></tbody></table></div></details>
+<details class="bg-grp"><summary>V. BẾP</summary><p class="muted bg-none">Không cung cấp</p></details>
+<details class="bg-grp"><summary>VI. THIẾT BỊ VỆ SINH</summary><p class="muted bg-none">Không cung cấp</p></details>
+<details class="bg-grp"><summary>VII. NỘI THẤT</summary><p class="muted bg-none">Không cung cấp</p></details>
+<details class="bg-grp"><summary>VIII. ĐƯỜNG ỐNG CẤP THOÁT NƯỚC</summary><div class="tbl-wrap"><table class="tbl-kv tbl-3 tbl-bg"><thead><tr><th>Khoản mục</th><th>Vật liệu &amp; thiết bị</th><th>Nhãn hiệu / Nhà cung cấp</th></tr></thead><tbody><tr><td>Cấp nước</td><td>Đường cấp nước ống PPR<small>Quy cách: Theo thiết kế</small></td><td>Tiền Phong, Đệ Nhất, Bình Minh hoặc nhập khẩu tương đương</td></tr><tr><td>Thoát nước</td><td>Đường ống thoát nước uPVC<small>Quy cách: Theo thiết kế</small></td><td>Tiền Phong, Đệ Nhất, Bình Minh hoặc nhập khẩu tương đương</td></tr></tbody></table></div></details>
+<details class="bg-grp"><summary>IX. THIẾT BỊ ĐIỆN NHẸ, INTERNET</summary><div class="tbl-wrap"><table class="tbl-kv tbl-3 tbl-bg"><thead><tr><th>Khoản mục</th><th>Vật liệu &amp; thiết bị</th><th>Nhãn hiệu / Nhà cung cấp</th></tr></thead><tbody><tr><td>Không gian bên trong</td><td>Đầu chờ cấp điện, mạng đến vị trí tủ điện chính (theo thiết kế)<small>Quy cách: Theo thiết kế</small></td><td>—</td></tr><tr><td>Logia - Đèn chiếu sáng</td><td><small>Quy cách: Theo thiết kế</small></td><td>Fawookidi, Duhal, AC hoặc sản phẩm tương đương trong nước/ nhập khẩu</td></tr><tr><td>Hệ thống video doorphone</td><td><small>Quy cách: Chuông cửa kết nối xuống tầng 1; màn hình</small></td><td>Panasonic, Comax, Aiphone/ Châu Á hoặc sản phẩm tương đương trong nước/ nhập khẩu</td></tr></tbody></table></div></details>
+<details class="bg-grp"><summary>X. ĐIỀU HÒA KHÔNG KHÍ</summary><div class="tbl-wrap"><table class="tbl-kv tbl-3 tbl-bg"><thead><tr><th>Khoản mục</th><th>Vật liệu &amp; thiết bị</th><th>Nhãn hiệu / Nhà cung cấp</th></tr></thead><tbody><tr><td>Không gian bên trong</td><td>Không cung cấp</td><td>—</td></tr></tbody></table></div></details>
+<details class="bg-grp"><summary>XI. PHÒNG CHÁY, CHỮA CHÁY</summary><div class="tbl-wrap"><table class="tbl-kv tbl-3 tbl-bg"><thead><tr><th>Khoản mục</th><th>Vật liệu &amp; thiết bị</th><th>Nhãn hiệu / Nhà cung cấp</th></tr></thead><tbody><tr><td>Phòng khách, phòng ngủ</td><td>Đầu báo cháy và chữa cháy đến từng phòng theo thiết kế được phê duyệt<small>Quy cách: Theo thiết kế PCCC</small></td><td>Notifier / Honeywell / Hochiki hoặc tương đương</td></tr><tr><td>Phòng bếp</td><td>Đầu báo cháy và chữa cháy đến từng phòng theo thiết kế được phê duyệt<small>Quy cách: Theo thiết kế PCCC</small></td><td>Notifier / Honeywell / Hochiki hoặc tương đương</td></tr></tbody></table></div></details>
+<details class="bg-grp"><summary>XII. LAN CAN, LOUVER</summary><div class="tbl-wrap"><table class="tbl-kv tbl-3 tbl-bg"><thead><tr><th>Khoản mục</th><th>Vật liệu &amp; thiết bị</th><th>Nhãn hiệu / Nhà cung cấp</th></tr></thead><tbody><tr><td>Lan can logia phòng khách</td><td>Kính cường lực hoàn thiện theo thiết kế<small>Quy cách: Kính cường lực</small></td><td>Việt Nhật, Hải Long, Hồng Phúc hoặc nhập khẩu</td></tr><tr><td>Louver</td><td>Louver kim loại sơn tĩnh điện/ sơn epoxy theo thiết kế<small>Quy cách: Sơn epoxy/ sơn tĩnh điện</small></td><td>—</td></tr></tbody></table></div></details>
+<h4>Lưu ý</h4><ul class="pl muted"><li>Danh mục vật liệu bàn giao có thể được thay đổi hoặc điều chỉnh, bao gồm loại hình, quy cách &amp; thương hiệu, với cam kết sử dụng các lựa chọn tương đương về chất lượng.</li><li>Thông số chính thức &amp; chi tiết sẽ được quy định trong Hợp đồng Mua Bán.</li></ul></div>
+  <p class="note">Hình ảnh và thông số mang tính chất tham khảo, có thể thay đổi không báo trước. Thông tin chính thức theo Hợp đồng Mua Bán.</p>
+</div></section>
+
+
+<!-- Nội dung của chương trình PWA8: danh sách tour / cảnh. Chạm vào cảnh để mở modal 360° -->
+
+<section class="plx" data-img="plx5" data-fold-with="chinh-sach" hidden><div class="display">Chính sách dành cho người mua sớm</div></section>
+
+<section id="chinh-sach" class="panel alt" data-fold hidden><div class="container-fluid">
+  <h2>Chính sách bán hàng</h2><div class="rule"></div>
+  <p class="muted">Tòa Lavish (SM2) &amp; Seren (SM3) · Quỹ bán trực tiếp Chủ đầu tư · Áp dụng từ 03/09/2026.</p>
+  <div class="pol-tabs" role="tablist" aria-label="Chính sách bán hàng">
+    <button class="pol-tab" type="button" role="tab" id="pt-qd" data-pol="qd" aria-controls="pp-qd" aria-selected="true">Quy định chung</button>
+    <button class="pol-tab" type="button" role="tab" id="pt-km" data-pol="km" aria-controls="pp-km" aria-selected="false">Khuyến mại</button>
+    <button class="pol-tab" type="button" role="tab" id="pt-tt" data-pol="tt" aria-controls="pp-tt" aria-selected="false">Thủ tục ký</button>
+    <button class="pol-tab" type="button" role="tab" id="pt-td" data-pol="td" aria-controls="pp-td" aria-selected="false">Tiến độ chuẩn</button>
+    <button class="pol-tab" type="button" role="tab" id="pt-ts" data-pol="ts" aria-controls="pp-ts" aria-selected="false">Thanh toán sớm</button>
+    <button class="pol-tab" type="button" role="tab" id="pt-vv" data-pol="vv" aria-controls="pp-vv" aria-selected="false">Vay vốn &amp; HTLS</button>
+  </div>
+  <div class="pol-pane on" id="pp-qd" role="tabpanel" aria-labelledby="pt-qd">
+<div class="tbl-wrap"><table class="tbl-kv"><tbody><tr><th scope="row">Dự án / Quỹ hàng</th><td>Greenera Southmark – Tòa Lavish (SM2) và tòa Seren (SM3) · Quỹ bán trực tiếp Chủ đầu tư</td></tr><tr><th scope="row">Thời gian áp dụng</th><td>Từ ngày 03/09/2026 đến khi có chính sách bán hàng thay thế</td></tr><tr><th scope="row">Đối tượng áp dụng</th><td>Khách hàng mua căn hộ tại tòa Lavish (SM2) và tòa Seren (SM3) dự án Greenera Southmark kể từ ngày chính sách này có hiệu lực</td></tr><tr><th scope="row">Tổng giá trị giao dịch</th><td>Là giá Hợp đồng mua bán (HĐMB) giữa Chủ đầu tư và Khách hàng</td></tr></tbody></table></div><p class="note">Viết tắt: HĐMB – Hợp đồng mua bán · TTĐC – Thỏa thuận đặt cọc · CĐT – Chủ đầu tư · KPBT – Kinh phí bảo trì · GCN – Giấy chứng nhận · TTS – Thanh toán sớm · HTLS – Hỗ trợ lãi suất.</p>
+  </div>
+  <div class="pol-pane" id="pp-km" role="tabpanel" aria-labelledby="pt-km">
+<h4>1. Tặng phí quản lý 02 năm</h4><div class="big">Khách hàng được tặng <b>02 năm đầu phí quản lý</b> kể từ ngày đến hạn bàn giao căn hộ theo thông báo bàn giao của Chủ đầu tư.</div><h4>2. Quà tặng khách hàng</h4><p class="muted">Khách hàng ký thủ tục từ ngày 03/09/2026 đến khi có CSBH mới thay thế được nhận đồng thời các gói quà tặng, trừ vào Tổng giá trị giao dịch (chưa gồm VAT &amp; KPBT) khi ký HĐMB căn hộ, nếu đáp ứng đủ điều kiện.</p><h4>2.1. Quà tặng “Mùa trăng an cư”</h4><div class="tbl-wrap"><table class="tbl-kv tbl-3"><thead><tr><th>Gói quà tặng</th><th>Giá trị (VND)</th><th>Loại căn áp dụng</th></tr></thead><tbody><tr><td>“ĐẠI LỘC”</td><td>300.000.000</td><td>2PN / 2PN (Sân vườn)</td></tr><tr><td>“PHÚ QUÝ”</td><td>200.000.000</td><td>1PN</td></tr><tr><td>“NHƯ Ý”</td><td>100.000.000</td><td>3PN / 3PN (Dual key) / 3PN (Sân vườn) / 4PN / 4PN (Sân vườn)</td></tr></tbody></table></div><h4>2.2. Quà tặng dành cho khách hàng có địa chỉ tại khu vực Nam Hà Nội</h4><div class="tbl-wrap"><table class="tbl-kv"><tbody><tr><th scope="row">Đối tượng</th><td>Khách hàng có địa chỉ thường trú / tạm trú tại khu vực Nam Hà Nội (áp dụng cho 23 xã/phường thuộc khu vực Nam Hà Nội)</td></tr><tr><th scope="row">Quà tặng</th><td><b>Chiết khấu 3%</b> trừ vào Tổng giá trị giao dịch (chưa gồm VAT &amp; KPBT) khi ký HĐMB căn hộ</td></tr></tbody></table></div><h4>2.3. Chương trình tri ân khách hàng thân thiết</h4><div class="tbl-wrap"><table class="tbl-kv"><tbody><tr><th scope="row">Quà tặng</th><td><b>Chiết khấu 5%</b> trừ vào Tổng giá trị giao dịch (chưa gồm VAT &amp; KPBT) khi ký HĐMB căn hộ</td></tr><tr><th scope="row">Điều kiện (1 trong 2)</th><td>• Khách hàng đang sở hữu BĐS thuộc tập đoàn Tân Hoàng Minh<br>• Khách hàng được giới thiệu bởi khách hàng đang sở hữu BĐS thuộc tập đoàn Tân Hoàng Minh</td></tr><tr><th scope="row">Dự án thuộc Tân Hoàng Minh</th><td>D' Capitale · D'. Le Roi Soleil · D'. Le Pont D'Or · D'. El Dorado I · D'. El Dorado II · Hanoi Signature</td></tr></tbody></table></div><h4>2.4. Chương trình hỗ trợ cho thuê căn 1 phòng ngủ</h4><div class="big">Khách hàng mua căn hộ 1PN và ký thủ tục từ ngày 03/09/2026 được nhận gói quà tặng tương đương chương trình hỗ trợ cho thuê <b>20 triệu/tháng trong 2 năm</b>, bằng hình thức <b>chiết khấu 480 triệu/căn</b> trừ vào Tổng giá trị giao dịch (chưa gồm VAT &amp; KPBT) khi ký HĐMB.</div>
+  </div>
+  <div class="pol-pane" id="pp-tt" role="tabpanel" aria-labelledby="pt-tt">
+<div class="tbl-wrap"><table class="tbl-kv tbl-3"><thead><tr><th>Thủ tục</th><th>Thời hạn / Mức nộp</th></tr></thead><tbody><tr><td>Ký Thỏa thuận đặt cọc (TTĐC)</td><td>Tại thời điểm nộp tiền đặt trước <b>50.000.000 VNĐ/căn</b> ký HĐMB căn hộ</td></tr><tr><td>Ký HĐMB</td><td>Trong 10 ngày kể từ ngày ký TTĐC · nộp <b>10% Tổng giá trị giao dịch (gồm VAT)</b></td></tr></tbody></table></div>
+  </div>
+  <div class="pol-pane" id="pp-td" role="tabpanel" aria-labelledby="pt-td">
+<p class="muted">Khách hàng ký HĐMB và thanh toán trước hạn bằng vốn tự có (không gồm KPBT) được hưởng <b>lãi suất chiết khấu tương đương 8%/năm</b> trên số tiền và số ngày thanh toán trước hạn (ít nhất 07 ngày trước ngày đến hạn của từng đợt).</p><ul class="pl muted"><li>Áp dụng cho khách hàng thanh toán tròn đợt tiến độ, trừ khi có thỏa thuận khác (mức chiết khấu có thể thay đổi mà không cần báo trước).</li><li>Khoản tiền lãi được giảm trừ vào đợt thanh toán theo thông báo của CĐT khi căn hộ được cấp GCN quyền sở hữu hoặc thời điểm bên mua tự làm thủ tục xin cấp GCN, tùy thời điểm nào đến trước; có tính đến việc khấu trừ thuế TNCN (nếu có) của khách hàng cho khoản lãi này.</li></ul><p class="muted">Tỷ lệ tính trên <b>Tổng giá trị giao dịch</b>.</p><h4>Căn 1PN và 2PN / 2PN (sân vườn)</h4><div class="tbl-wrap"><table class="tbl-kv tbl-3 tbl-sched"><thead><tr><th>Đợt</th><th>Tiến độ</th><th>Tỷ lệ</th></tr></thead><tbody><tr><td>Lần 1</td><td>Ký HĐMB<small>10 ngày kể từ ngày ký TTĐC</small></td><td><b>10%</b><small>gồm VAT</small></td></tr><tr><td>Lần 2</td><td>Ngày 15/10/2026</td><td><b>5%</b><small>gồm VAT</small></td></tr><tr><td>Lần 3</td><td>Ngày 15/12/2026</td><td><b>5%</b><small>gồm VAT</small></td></tr><tr><td>Lần 4</td><td>Ngày 15/02/2027</td><td><b>5%</b><small>gồm VAT</small></td></tr><tr><td>Lần 5</td><td>Ngày 15/05/2027</td><td><b>5%</b><small>gồm VAT</small></td></tr><tr><td>Lần 6</td><td>Ngày 15/08/2027</td><td><b>5%</b><small>gồm VAT</small></td></tr><tr><td>Lần 7</td><td>Ngày 15/11/2027</td><td><b>5%</b><small>gồm VAT</small></td></tr><tr class="hl"><td>Lần 8</td><td>Theo thông báo nhận bàn giao căn hộ của Chủ đầu tư<small>Dự kiến Quý 4/2027</small></td><td><b>30%</b> + VAT của 30% + 100% KPBT<small>gồm VAT</small></td></tr><tr><td>Lần 9</td><td>Ngày 15/02/2028</td><td><b>5%</b><small>chưa gồm VAT</small></td></tr><tr><td>Lần 10</td><td>Ngày 15/03/2028</td><td><b>5%</b><small>chưa gồm VAT</small></td></tr><tr><td>Lần 11</td><td>Ngày 15/04/2028</td><td><b>5%</b><small>chưa gồm VAT</small></td></tr><tr><td>Lần 12</td><td>Ngày 15/05/2028</td><td><b>5%</b><small>chưa gồm VAT</small></td></tr><tr><td>Lần 13</td><td>Ngày 15/06/2028</td><td><b>5%</b><small>chưa gồm VAT</small></td></tr><tr><td>Lần 14</td><td>Theo thông báo của CĐT khi căn hộ được cấp GCN quyền sở hữu hoặc thời điểm được xác định bên mua tự làm thủ tục xin cấp GCN quyền sở hữu căn hộ, tùy thời điểm nào đến trước</td><td><b>5%</b><small>chưa gồm VAT</small></td></tr></tbody></table></div><h4>Các căn còn lại</h4><div class="tbl-wrap"><table class="tbl-kv tbl-3 tbl-sched"><thead><tr><th>Đợt</th><th>Tiến độ</th><th>Tỷ lệ</th></tr></thead><tbody><tr><td>Lần 1</td><td>Ký HĐMB<small>10 ngày kể từ ngày ký TTĐC</small></td><td><b>10%</b><small>gồm VAT</small></td></tr><tr><td>Lần 2</td><td>Ngày 15/10/2026</td><td><b>10%</b><small>gồm VAT</small></td></tr><tr><td>Lần 3</td><td>Ngày 30/01/2027</td><td><b>5%</b><small>gồm VAT</small></td></tr><tr><td>Lần 4</td><td>Ngày 15/03/2027</td><td><b>5%</b><small>gồm VAT</small></td></tr><tr><td>Lần 5</td><td>Ngày 15/04/2027</td><td><b>5%</b><small>gồm VAT</small></td></tr><tr><td>Lần 6</td><td>Ngày 15/05/2027</td><td><b>5%</b><small>gồm VAT</small></td></tr><tr><td>Lần 7</td><td>Ngày 15/06/2027</td><td><b>5%</b><small>gồm VAT</small></td></tr><tr><td>Lần 8</td><td>Ngày 15/07/2027</td><td><b>5%</b><small>gồm VAT</small></td></tr><tr><td>Lần 9</td><td>Ngày 15/08/2027</td><td><b>5%</b><small>gồm VAT</small></td></tr><tr><td>Lần 10</td><td>Ngày 15/09/2027</td><td><b>5%</b><small>gồm VAT</small></td></tr><tr><td>Lần 11</td><td>Ngày 15/10/2027</td><td><b>5%</b><small>gồm VAT</small></td></tr><tr><td>Lần 12</td><td>Ngày 15/11/2027</td><td><b>5%</b><small>gồm VAT</small></td></tr><tr class="hl"><td>Lần 13</td><td>Theo thông báo nhận bàn giao căn hộ của Chủ đầu tư<small>Dự kiến Quý 4/2027</small></td><td><b>25%</b> + VAT của 5% + 100% KPBT<small>gồm VAT</small></td></tr><tr><td>Lần 14</td><td>Theo thông báo của CĐT khi căn hộ được cấp GCN quyền sở hữu hoặc thời điểm được xác định bên mua tự làm thủ tục xin cấp GCN quyền sở hữu căn hộ, tùy thời điểm nào đến trước</td><td><b>5%</b><small>chưa gồm VAT</small></td></tr></tbody></table></div><h4>Lưu ý</h4><ul class="pl muted"><li>Nếu ngày đến hạn trùng ngày nghỉ, lễ/Tết, khách hàng được gia hạn sang ngày làm việc đầu tiên sau đó.</li><li>Nếu ngày ký HĐMB vượt quá các đợt thanh toán thì gộp vào đợt tiếp theo và khách hàng được gia hạn 15 ngày để thanh toán hết đợt phát sinh (không áp dụng cho trường hợp khách hàng quá hạn thanh toán).</li><li>Nếu hạn thanh toán thực tế theo thông báo bàn giao của CĐT vượt quá ngày thanh toán của các đợt tiếp theo thì tỷ lệ thanh toán được cộng dồn vào đợt thanh toán theo thông báo bàn giao.</li></ul>
+  </div>
+  <div class="pol-pane" id="pp-ts" role="tabpanel" aria-labelledby="pt-ts">
+<p class="muted">Khách hàng mua căn hộ và chọn 1 trong các phương án TTS được hưởng chiết khấu trừ vào Tổng giá trị giao dịch (chưa gồm VAT &amp; KPBT) khi thanh toán đủ tỷ lệ trong vòng <b>15 ngày kể từ ngày ký HĐMB, không muộn hơn ngày 31/10/2026</b>.</p><div class="tbl-wrap"><table class="tbl-kv tbl-3"><thead><tr><th>Phương án</th><th>Thanh toán</th><th>Chiết khấu</th></tr></thead><tbody><tr><td>Phương án 1</td><td>TTS 95% Tổng giá trị giao dịch (chưa gồm VAT &amp; KPBT) + 100% VAT</td><td><b>15%</b></td></tr><tr><td>Phương án 2</td><td>TTS 70% Tổng giá trị giao dịch (gồm VAT)</td><td><b>10%</b></td></tr><tr><td>Phương án 3</td><td>TTS 50% Tổng giá trị giao dịch (gồm VAT)</td><td><b>8%</b></td></tr></tbody></table></div><h4>Tiến độ phương án TTS 70% và TTS 50%</h4><p class="muted">Tỷ lệ tính trên <b>Tổng giá trị giao dịch</b>.</p><div class="tbl-wrap"><table class="tbl-kv tbl-3 tbl-sched"><thead><tr><th>Đợt</th><th>Tiến độ</th><th>TTS 70%</th><th>TTS 50%</th></tr></thead><tbody><tr><td>Lần 1</td><td>Ký HĐMB<small>10 ngày kể từ ngày ký TTĐC</small></td><td><b>10%</b><small>gồm VAT</small></td><td><b>10%</b><small>gồm VAT</small></td></tr><tr><td>Lần 2</td><td>Trong vòng 15 ngày từ ngày ký HĐMB, không muộn hơn ngày 31/10/2026</td><td><b>60%</b><small>gồm VAT</small></td><td><b>40%</b><small>gồm VAT</small></td></tr><tr><td>Lần 3</td><td>Ngày 15/08/2027</td><td>—</td><td><b>5%</b><small>gồm VAT</small></td></tr><tr><td>Lần 4</td><td>Ngày 15/09/2027</td><td>—</td><td><b>5%</b><small>gồm VAT</small></td></tr><tr><td>Lần 5</td><td>Ngày 15/10/2027</td><td>—</td><td><b>5%</b><small>gồm VAT</small></td></tr><tr><td>Lần 6</td><td>Ngày 15/11/2027</td><td>—</td><td><b>5%</b><small>gồm VAT</small></td></tr><tr class="hl"><td>Lần 7</td><td>Theo thông báo nhận bàn giao căn hộ của Chủ đầu tư<small>Dự kiến Quý 4/2027</small></td><td><b>25%</b> + VAT của 5% + 100% KPBT<small>gồm VAT</small></td><td><b>25%</b> + VAT của 5% + 100% KPBT<small>gồm VAT</small></td></tr><tr><td>Lần 8</td><td>Theo thông báo của CĐT khi căn hộ được cấp GCN quyền sở hữu hoặc thời điểm được xác định bên mua tự làm thủ tục xin cấp GCN quyền sở hữu căn hộ, tùy thời điểm nào đến trước</td><td><b>5%</b><small>chưa gồm VAT</small></td><td><b>5%</b><small>chưa gồm VAT</small></td></tr></tbody></table></div>
+  </div>
+  <div class="pol-pane" id="pp-vv" role="tabpanel" aria-labelledby="pt-vv">
+<div class="big">Khách hàng vay vốn ngân hàng <b>tới 70% Tổng giá trị giao dịch (gồm VAT)</b> khi ký HĐMB được nhận hỗ trợ lãi suất từ Chủ đầu tư.</div><div class="tbl-wrap"><table class="tbl-kv tbl-3"><thead><tr><th>Chính sách</th><th>Chi tiết</th></tr></thead><tbody><tr><td>Mức dư nợ vay</td><td>Tối đa lên đến 70% Tổng giá trị giao dịch (gồm VAT)</td></tr><tr><td>Mức dư nợ được hưởng hỗ trợ lãi suất</td><td>Tối đa lên đến 70% Tổng giá trị giao dịch (gồm VAT) đến hết ngày 31/12/2027<br>Ngân hàng hỗ trợ giải ngân: <b>MB Bank</b></td></tr><tr><td>Thời gian HTLS</td><td>CĐT hỗ trợ lãi suất khoản vay kể từ ngày giải ngân đến hết ngày 31/12/2027<br>Khoản vay được ân hạn nợ gốc trong thời gian hỗ trợ lãi suất</td></tr><tr><td>Phí trả nợ trước hạn</td><td>Trong thời gian HTLS: CĐT hỗ trợ 1 lần<br>Sau khi kết thúc HTLS: khách hàng chi trả theo quy định của ngân hàng tại từng thời điểm</td></tr></tbody></table></div><h4>Tiến độ giải ngân – căn 1PN và 2PN / 2PN (sân vườn)</h4><div class="tbl-wrap"><table class="tbl-kv tbl-3 tbl-sched"><thead><tr><th>Đợt</th><th>Tiến độ</th><th>Khách hàng giải ngân</th><th>Ngân hàng giải ngân</th></tr></thead><tbody><tr><td>Lần 1</td><td>Ký HĐMB<small>10 ngày kể từ ngày ký TTĐC</small></td><td><b>10%</b><small>gồm VAT</small></td><td></td></tr><tr><td>Lần 2</td><td>Ngày 15/10/2026</td><td><b>5%</b><small>gồm VAT</small></td><td></td></tr><tr><td>Lần 3</td><td>Ngày 15/12/2026</td><td><b>5%</b><small>gồm VAT</small></td><td><b>70%</b><small>gồm VAT</small></td></tr><tr class="hl"><td>Lần 4</td><td>Theo thông báo nhận bàn giao căn hộ của Chủ đầu tư<small>Dự kiến Quý 4/2027</small></td><td><b>5%</b> + VAT của 5% + 100% KPBT<small>gồm VAT</small></td><td></td></tr><tr><td>Lần 5</td><td>Theo thông báo của CĐT khi căn hộ được cấp GCN quyền sở hữu hoặc thời điểm được xác định bên mua tự làm thủ tục xin cấp GCN quyền sở hữu căn hộ, tùy thời điểm nào đến trước</td><td><b>5%</b><small>chưa gồm VAT</small></td><td></td></tr></tbody></table></div><h4>Tiến độ giải ngân – các căn còn lại</h4><div class="tbl-wrap"><table class="tbl-kv tbl-3 tbl-sched"><thead><tr><th>Đợt</th><th>Tiến độ</th><th>Khách hàng giải ngân</th><th>Ngân hàng giải ngân</th></tr></thead><tbody><tr><td>Lần 1</td><td>Ký HĐMB<small>10 ngày kể từ ngày ký TTĐC</small></td><td><b>10%</b><small>gồm VAT</small></td><td></td></tr><tr><td>Lần 2</td><td>Ngày 15/10/2026</td><td><b>10%</b><small>gồm VAT</small></td><td><b>70%</b><small>gồm VAT</small></td></tr><tr class="hl"><td>Lần 3</td><td>Theo thông báo nhận bàn giao căn hộ của Chủ đầu tư<small>Dự kiến Quý 4/2027</small></td><td><b>5%</b> + VAT của 5% + 100% KPBT<small>gồm VAT</small></td><td></td></tr><tr><td>Lần 4</td><td>Theo thông báo của CĐT khi căn hộ được cấp GCN quyền sở hữu hoặc thời điểm được xác định bên mua tự làm thủ tục xin cấp GCN quyền sở hữu căn hộ, tùy thời điểm nào đến trước</td><td><b>5%</b><small>chưa gồm VAT</small></td><td></td></tr></tbody></table></div><h4>Lưu ý</h4><ul class="pl muted"><li>Chính sách áp dụng với khách hàng cá nhân đứng tên trong HĐMB. Khách hàng doanh nghiệp được Bên bán hỗ trợ lãi suất và phí trả nợ trước hạn tối đa bằng mức hỗ trợ cho khách hàng cá nhân; phần vượt mức (nếu có) doanh nghiệp tự chi trả với ngân hàng.</li><li>Tỷ lệ vay tối đa do ngân hàng thẩm định và cung cấp theo Hợp đồng tín dụng với khách hàng.</li><li>Bên bán chỉ hỗ trợ lãi suất trong thời gian nêu trên đối với khách hàng đáp ứng đủ điều kiện vay vốn và hoàn thành đầy đủ thủ tục theo quy định của ngân hàng do Bên bán chỉ định.</li><li>Khách hàng đã chọn chính sách ưu đãi tài chính thì các khoản vốn tự có không được tính lãi thanh toán sớm.</li></ul>
+  </div>
+  <p class="note">Thông tin mang tính chất tham khảo, có thể thay đổi không báo trước. Thông tin chính thức theo văn bản chính sách bán hàng và hợp đồng ký kết giữa Chủ đầu tư và khách hàng.</p>
+</div></section>
+
+<section class="plx" data-img="plx6"><div class="display">Hẹn gặp anh chị tại dự án</div></section>
+
+<section id="dang-ky" class="panel"><div class="container-fluid">
+  <h2>Đăng ký tư vấn</h2><div class="rule"></div>
+  <p class="muted">Để lại thông tin, chuyên viên sẽ gọi lại trong giờ làm việc.</p>
+  <form id="lead" class="row g-3 mt-1" novalidate>
+    <div class="col-12"><input class="form-control" name="name" placeholder="Họ và tên" required autocomplete="name"></div>
+    <div class="col-12">
+      <div id="phoneList"><div class="phone-row"><input class="form-control" name="phone" type="tel" inputmode="tel" placeholder="Số điện thoại" required autocomplete="tel"><label class="zalo-chk"><input type="checkbox" name="zaloChk" checked><span>Zalo</span></label><span class="rm-spacer" aria-hidden="true"></span></div></div>
+      <button id="addPhone" class="link-btn" type="button">+ Thêm số điện thoại khác</button>
+    </div>
+    <div class="col-12"><input class="form-control" name="email" type="email" placeholder="Email (không bắt buộc)" autocomplete="email"></div>
+    <div class="col-12"><select class="form-select" name="interest">
+      <option value="">Anh chị quan tâm loại căn nào?</option><option>1 phòng ngủ</option><option>2 phòng ngủ</option><option>3 phòng ngủ</option><option>4 phòng ngủ</option></select></div>
+    <div class="col-12"><textarea class="form-control note-box" name="note" rows="6" placeholder="Ghi chú"></textarea></div>
+    <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <div class="col-12"><button id="leadBtn" class="btn btn-brass" type="submit">Gửi đăng ký</button><span id="leadMsg" class="d-block mt-3" role="status"></span></div>
+  </form>
+</div></section>
+
+</main>
+<button id="toTop" class="to-top" type="button" aria-label="Về đầu trang"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 15l7-7 7 7"/></svg></button>
+</div><!-- /frame -->
+
+<div id="apToast" class="ap-toast" role="status"></div>
+
+<div id="appSplash" class="ap-splash d-none">
+  <div class="ap-splash-card">
+    <div class="ap-spin" aria-hidden="true"><i></i><i></i><i></i></div>
+    <h2>Đang tải</h2>
+    <div class="ap-bar"><div id="splashBar"></div></div>
+    <p id="splashText">Đang bắt đầu…</p>
+    <div class="ap-actions">
+      <button id="splashRetry" class="ap-primary d-none">Thử lại</button>
+      <button id="splashSkip" class="ap-ghost d-none">Tiếp tục</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 360° toàn màn hình: không header, không footer, chỉ có nút đóng. Phím Back của điện thoại cũng đóng được -->
+<div class="modal fade" id="viewerModal" tabindex="-1" aria-label="Xem 360 độ" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen m-0">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div id="appPanorama"></div>
+        <button id="avScenes" class="ap-scenes-btn" type="button" aria-controls="avDrawer" aria-expanded="false">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+          <span id="avCurrent">Danh sách cảnh</span>
+        </button>
+        <button id="avClose" class="ap-x" type="button" aria-label="Đóng">×</button>
+        <div id="avBackdrop" class="ap-backdrop"></div>
+        <aside id="avDrawer" class="ap-drawer" aria-label="Danh sách cảnh" aria-hidden="true">
+          <div class="ap-drawer-head"><div><small id="avTourName"></small><b>Danh sách cảnh</b></div><button id="avDrawerClose" type="button" aria-label="Đóng danh sách">×</button></div>
+          <div id="avSceneList" class="ap-drawer-list"></div>
+        </aside>
+      </div>
+    </div>
+  </div>
+</div>
+</div><!-- /appRoot -->
+
+<script src="./vendor/bootstrap.bundle.min.js"></script>
+<script>window.bootstrap||document.write('<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"><\/script>')</script>
+<script src="./vendor/pannellum.js"></script>
+<script>window.pannellum||document.write('<script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js" crossorigin="anonymous"><\/script>')</script>
+<script src="./app.js?v=r36"></script>
+<script>
+(function(){
+  // Accordion "Mặt bằng": mở 1 tòa tại một thời điểm; bấm vào tòa nào thì cuộn về đầu tòa đó
+  var items=[].slice.call(document.querySelectorAll('#mbAcc .acc-item'));
+  items.forEach(function(it){
+    var head=it.querySelector('.acc-head');
+    head.addEventListener('click',function(){
+      var open=!it.classList.contains('on');
+      items.forEach(function(o){var on=o===it&&open;o.classList.toggle('on',on);o.querySelector('.acc-head').setAttribute('aria-expanded',on);});
+      window.dispatchEvent(new Event('resize')); // để carousel trong lớp vừa mở tính lại kích thước
+      requestAnimationFrame(function(){requestAnimationFrame(function(){it.scrollIntoView({behavior:'smooth',block:'start'});});});
+    });
+  });
+})();
+</script>
+<script>
+(function(){
+  // Tab dùng chung: mỗi thanh .pol-tabs điều khiển các .pol-pane là con trực tiếp của cùng khối cha (theo aria-controls)
+  [].forEach.call(document.querySelectorAll('.pol-tabs'),function(bar){
+    var tabs=[].slice.call(bar.querySelectorAll('.pol-tab')), host=bar.parentElement;
+    function show(b,focus,center,scroll){
+      tabs.forEach(function(t){var on=t===b;t.setAttribute('aria-selected',on);t.tabIndex=on?0:-1;});
+      [].forEach.call(host.children,function(p){if(p.classList.contains('pol-pane'))p.classList.toggle('on',p.id===b.getAttribute('aria-controls'));});
+      if(focus)b.focus({preventScroll:true});
+      if(scroll)bar.scrollIntoView({behavior:'smooth',block:'start'}); // về đầu tab (scroll-padding-top của khung đã chừa chỗ cho menu dính)
+      if(center)bar.scrollTo({left:bar.scrollLeft+(b.getBoundingClientRect().left-bar.getBoundingClientRect().left)-(bar.clientWidth-b.offsetWidth)/2,behavior:'smooth'}); // chỉ cuộn ngang thanh tab, không cuộn trang
+    }
+    tabs.forEach(function(b,i){
+      b.addEventListener('click',function(){show(b,false,true,true);});
+      b.addEventListener('keydown',function(e){
+        var j=e.key==='ArrowRight'?i+1:e.key==='ArrowLeft'?i-1:-1;
+        if(j>=0){e.preventDefault();show(tabs[(j+tabs.length)%tabs.length],true,true,true);}
+      });
+    });
+    show(tabs[0]);
+  });
+})();
+</script>
+</body>
+</html>
