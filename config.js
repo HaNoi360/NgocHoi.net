@@ -19,7 +19,7 @@ g.APP_CONFIG = {
 
   // ===== 2. PHIÊN BẢN =====
   // Mỗi lần sửa file và đưa lên host, đổi số này (vd. r34-2026-11-02). Phần trước dấu "-" (r34) được dùng để làm mới bộ nhớ offline trên máy khách.
-  phienBan: "r38-2026-11-05",
+  phienBan: "r39-2026-11-05",
 
   // ===== 3. KHẢO SÁT =====
   // Chế độ ban đầu: false = chế độ tư vấn (bỏ khảo sát, giới thiệu dự án luôn); true = có khảo sát trước.
@@ -47,7 +47,7 @@ g.APP_CONFIG = {
   // ===== 6. ẢNH TRANG GIỚI THIỆU: khóa -> ID file ảnh trên Google Drive (khóa trùng với data-img trong index.html; để "" thì dùng ảnh tạm) =====
   anh: {
     hero:"1zsayrl8x2asJZumitA1DiVL5Ieh8ZsJb",
-    hero_pano:"1lPepFBM3dvKqXJBt-AA765S5mNi0AZeb", // Chế độ tư vấn: hero là ảnh 360° (Panellum) thay cho ảnh tĩnh hero_tuvan
+    hero_pano:"14CIb81FK60JuFQ3S2dvPlfqn7qUfm5jk", // Chế độ tư vấn: hero là ảnh 360° (Panellum) thay cho ảnh tĩnh hero_tuvan
     tongquan:"1LfYN05MoywpcoqxhNwud-jnh3E4wWzdH",
     chudautu:"1If2ewQGMtygv-Tgh0EtyKwKZr-vWRQL4",
     vitri:"1hPsna__89G9VhOlbWq2vHNyZEYwyIp2R",
