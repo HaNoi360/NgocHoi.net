@@ -920,11 +920,12 @@
 
   // ===== Ảnh trang giới thiệu + bóc mái: tải về IndexedDB để chạy offline hoàn toàn =====
   const noSurveyMode = () => document.documentElement.classList.contains("no-survey");
-  const landingElUrl = el => { const isImg = el.tagName === "IMG"; return landingUrl(el.dataset.img === "hero" && noSurveyMode() ? "hero_tuvan" : el.dataset.img, +el.dataset.w || (isImg ? 1200 : 1000), +el.dataset.h || (isImg ? 750 : 1600), isImg); };
+  const heroPanoUrl = () => LANDING.hero_pano ? makeImageUrl(LANDING.hero_pano) : ""; // ảnh 360° của hero (chế độ tư vấn)
+  const landingElUrl = el => { const isImg = el.tagName === "IMG"; if (el.dataset.img === "hero" && noSurveyMode() && heroPanoUrl()) return heroPanoUrl(); return landingUrl(el.dataset.img, +el.dataset.w || (isImg ? 1200 : 1000), +el.dataset.h || (isImg ? 750 : 1600), isImg); };
   function landingList() {
     const seen = new Set();
     document.querySelectorAll("#appRoot [data-img]").forEach(el => seen.add(landingElUrl(el)));
-    seen.add(landingUrl("hero_tuvan", 1000, 1600, false)); seen.add(landingUrl("hero", 1000, 1600, false)); // cả hai ảnh hero để chạy được ở hai chế độ
+    seen.add(landingUrl("hero", 1000, 1600, false)); if (heroPanoUrl()) seen.add(heroPanoUrl()); // ảnh hero tĩnh (có khảo sát) + ảnh 360° (chế độ tư vấn) để chạy được ở hai chế độ
     BOC_MAI.forEach((it, i) => seen.add(bocMaiUrl(it, i)));
     Object.values(CAROUSELS).forEach(c => c.items.forEach(it => seen.add(it.url || landingUrl(it.key, 1000, 750, true)))); // ảnh carousel (đúng cỡ initCarousels dùng)
     return [...seen];
@@ -955,6 +956,7 @@
     const eager = isOfflineReady();
     for (const el of els) {
       if (heroHold && el.dataset.img === "hero") continue;
+      if (el.dataset.img === "hero" && noSurveyMode() && heroPanoUrl()) continue; // chế độ tư vấn: hero là Panellum 360°, không dùng ảnh tĩnh
       if (!eager && !lazyDone.has(unitOf(el))) continue;
       const url = el.dataset.img === "hero" ? landingElUrl(el) : (el.dataset.lurl || (el.dataset.lurl = landingElUrl(el))); // hero đổi ảnh theo chế độ
       const src = (await landingLocalUrl(url)) || (navigator.onLine ? url : "");
@@ -968,6 +970,50 @@
           el._retry = true; el.src = src + (src.includes("?") ? "&" : "?") + "r=" + Date.now();
         });
       } else el.style.setProperty("--bg", `url("${src}")`);
+    }
+    await syncHeroPano();
+  }
+
+  // ----- Hero 360° (Panellum) cho chế độ tư vấn -----
+  let heroPano = null, heroPanoSrc = "", heroPanoSeq = 0, heroPanoIO = null, heroVisible = true;
+  function updateHeroRotate() { // chỉ tự xoay khi hero đang hiện trên màn hình và không mở khung xem tour 360°
+    if (!heroPano) return;
+    try { if (heroVisible && !modalOpen) heroPano.startAutoRotate(-2); else heroPano.stopAutoRotate(); } catch {}
+  }
+  function destroyHeroPano() {
+    heroPanoSeq++;
+    heroPanoIO?.disconnect(); heroPanoIO = null;
+    try { heroPano?.destroy(); } catch {}
+    heroPano = null; heroPanoSrc = "";
+    const box = $("heroPano"); if (box) box.innerHTML = "";
+  }
+  async function syncHeroPano() {
+    const box = $("heroPano"); if (!box) return;
+    const url = heroPanoUrl();
+    if (!noSurveyMode() || heroHold || !url || typeof pannellum === "undefined") { if (heroPano) destroyHeroPano(); return; }
+    if (heroPano && heroPanoSrc === url) return;
+    const seq = ++heroPanoSeq;
+    let src = await landingLocalUrl(url);
+    if (!src && navigator.onLine) { // chưa có trong máy: tải về một lần rồi dùng bản blob (giống ảnh hero tĩnh)
+      try { const blob = await fetchImageBlob(url); landingBlobUrls.set(url, URL.createObjectURL(blob)); src = landingBlobUrls.get(url); } catch (e) { console.warn("Không tải được ảnh hero 360°:", e); }
+    }
+    if (!src || seq !== heroPanoSeq || !noSurveyMode()) return; // đã đổi chế độ / có lần gọi mới hơn trong lúc tải
+    try { heroPano?.destroy(); } catch {}
+    box.innerHTML = "";
+    const hero = box.closest(".hero");
+    if (hero && getComputedStyle(hero).position === "static") hero.style.position = "relative"; // để Panellum phủ kín đúng khung hero
+    heroPanoSrc = url;
+    heroPano = pannellum.viewer("heroPano", {
+      type: "equirectangular", panorama: src, autoLoad: true,
+      showControls: false, showZoomCtrl: false, showFullscreenCtrl: false, compass: false,
+      mouseZoom: false, doubleClickZoom: false, keyboardZoom: false, disableKeyboardCtrl: true, // để cuộn chuột vẫn cuộn trang
+      hfov: 100, minHfov: 60, maxHfov: 110, pitch: 0, yaw: 0,
+      autoRotate: -2, autoRotateInactivityDelay: 4000
+    });
+    heroPanoIO?.disconnect();
+    if ("IntersectionObserver" in window && hero) {
+      heroPanoIO = new IntersectionObserver(es => { heroVisible = es[es.length - 1].isIntersecting; updateHeroRotate(); }, { root: $("scroller"), threshold: 0.05 });
+      heroPanoIO.observe(hero);
     }
   }
   async function fetchLandingWithRetry(url, tries = 3, onFrac) {
@@ -1278,8 +1324,8 @@
     initLanding();
     const modalEl = $("viewerModal");
     modal = new bootstrap.Modal(modalEl, { backdrop: "static", keyboard: false });
-    modalEl.addEventListener("shown.bs.modal", () => { modalOpen = true; if (!wantOpen) return modal.hide(); createViewer(); });
-    modalEl.addEventListener("hidden.bs.modal", () => { modalOpen = false; setDrawer(false); pendingViewer = null; destroyViewer(); $("appPanorama").innerHTML = ""; });
+    modalEl.addEventListener("shown.bs.modal", () => { modalOpen = true; updateHeroRotate(); if (!wantOpen) return modal.hide(); createViewer(); });
+    modalEl.addEventListener("hidden.bs.modal", () => { modalOpen = false; updateHeroRotate(); setDrawer(false); pendingViewer = null; destroyViewer(); $("appPanorama").innerHTML = ""; });
     $("avClose").addEventListener("click", closeViewer);
     initSceneDrawer();
     addEventListener("keydown", e => { if (e.key !== "Escape" || !wantOpen) return; if ($("viewerModal").classList.contains("drawer-open")) setDrawer(false); else closeViewer(); });
