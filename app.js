@@ -399,7 +399,9 @@
       if (old && !old.redirected) continue; // bản đã lưu có cờ "redirected" (do host chuyển /index.html -> /) sẽ làm Chrome không mở được khi offline: tải lại bản sạch
       try {
         const r = await fetch(new Request(u, { cache: "reload" })); if (!r.ok) throw new Error("HTTP " + r.status);
-        await cache.put(u, r.redirected ? new Response(await r.blob(), { status: 200, statusText: "OK", headers: r.headers }) : r);
+        let out = r;
+        if (r.redirected) { const h = new Headers(r.headers); h.delete("content-encoding"); h.delete("content-length"); out = new Response(await r.blob(), { status: 200, statusText: "OK", headers: h }); }
+        await cache.put(u, out);
       }
       catch (e) { if (!libVendor.has(u)) missing.push(u); }
     }

@@ -32,6 +32,36 @@ async function findShell(...urls) {
   }
   return null;
 }
+// Bản "sạch" của phản hồi đã lưu: Chrome không cho trả phản hồi có cờ redirected cho lượt điều hướng. Bỏ Content-Encoding/Length vì nội dung đã được giải nén.
+const cleanHeaders = h => { const n = new Headers(h); n.delete("content-encoding"); n.delete("content-length"); return n; };
+const clean = async r => (r && r.redirected) ? new Response(await r.blob(), { status: 200, statusText: "OK", headers: cleanHeaders(r.headers) }) : r;
+// Phản hồi lấy từ bộ nhớ khi không có mạng (dùng chung cho fetch thật và cho kiểm tra chẩn đoán)
+async function offlineResponse(req, sameOrigin, isNav) {
+  const cache = await caches.open(sameOrigin ? SHELL_CACHE : CDN_CACHE);
+  const hit = (await cache.match(req, { ignoreSearch: true })) || (sameOrigin ? await findShell(req.url) : null);
+  if (hit) return clean(hit);
+  if (sameOrigin && isNav) {
+    const fb = (await cache.match("./index.html", { ignoreSearch: true })) || (await cache.match("./", { ignoreSearch: true })) || (await findShell("./index.html", "./"));
+    if (fb) return clean(fb);
+  }
+  return null;
+}
+// Trang diag.html hỏi SW để biết nó thấy gì trong bộ nhớ
+self.addEventListener("message", event => {
+  const d = event.data || {};
+  if (d.type !== "diag" || !event.ports || !event.ports[0]) return;
+  event.waitUntil((async () => {
+    const out = { rev: REV, urlV: URL_V, configRev: APP_CFG.phienBan || null, shellCache: SHELL_CACHE, scope: self.registration.scope, caches: {}, offlineTests: {} };
+    try { for (const k of await caches.keys()) out.caches[k] = (await (await caches.open(k)).keys()).map(r => r.url); } catch (e) { out.cachesError = String(e); }
+    for (const u of ["./index.html", "./"]) {
+      try {
+        const r = await offlineResponse(new Request(new URL(u, self.registration.scope).href), true, true);
+        out.offlineTests[u] = r ? { found: true, status: r.status, type: r.type, redirected: r.redirected, contentEncoding: r.headers.get("content-encoding"), contentType: r.headers.get("content-type") } : { found: false };
+      } catch (e) { out.offlineTests[u] = { found: false, error: String(e) }; }
+    }
+    event.ports[0].postMessage(out);
+  })());
+});
 self.addEventListener("fetch", event => {
   const req = event.request;
   if (req.method !== "GET") return;
@@ -66,14 +96,8 @@ self.addEventListener("fetch", event => {
       if (response.ok && response.type !== "opaque") cache.put(req, response.clone()).catch(() => {});
       return response;
     } catch (e) {
-      // Chrome KHÔNG cho trả về phản hồi có cờ "redirected" cho một lượt điều hướng (lỗi -> hiện trang khủng long). Host hay chuyển /index.html -> / nên bản lưu có thể mang cờ này: dựng lại bản sạch.
-      const clean = async r => (r && r.redirected) ? new Response(await r.blob(), { status: 200, statusText: "OK", headers: r.headers }) : r;
-      const hit = (await cache.match(req, { ignoreSearch: true })) || (sameOrigin ? await findShell(req.url) : null);
-      if (hit) return clean(hit);
-      if (sameOrigin && req.mode === "navigate") {
-        const fallback = (await cache.match("./index.html", { ignoreSearch: true })) || (await cache.match("./", { ignoreSearch: true })) || (await findShell("./index.html", "./"));
-        if (fallback) return clean(fallback);
-      }
+      const r = await offlineResponse(req, sameOrigin, req.mode === "navigate");
+      if (r) return r;
       throw e;
     }
   })());
