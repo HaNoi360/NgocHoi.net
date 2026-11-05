@@ -987,6 +987,19 @@
     heroPano = null; heroPanoSrc = "";
     const box = $("heroPano"); if (box) box.innerHTML = "";
   }
+  // Không có/không đọc được ảnh 360°: bỏ khung Panellum, hiện lại ảnh hero tĩnh (đã nằm trong danh sách tải offline) và báo rõ lý do thay vì để nền đen
+  async function heroPanoFallback(reason) {
+    console.warn("Hero 360° không hiển thị được:", reason);
+    const box = $("heroPano"); if (!box) return;
+    try { heroPano?.destroy(); } catch {}
+    heroPano = null; heroPanoSrc = ""; box.innerHTML = ""; box.classList.add("off");
+    const hero = box.closest(".hero");
+    try {
+      const su = landingUrl("hero", 1000, 1600, false), ss = (await landingLocalUrl(su)) || (navigator.onLine ? su : "");
+      if (ss && hero) hero.style.setProperty("--bg", `url("${ss}")`);
+    } catch {}
+    showToast(navigator.onLine ? "Chưa tải được ảnh 360° của trang đầu." : "Chưa có ảnh 360° trang đầu trong máy. Hãy tạo lại bản offline khi có mạng.", 4000);
+  }
   async function syncHeroPano() {
     const box = $("heroPano"); if (!box) return;
     const url = heroPanoUrl();
@@ -997,9 +1010,10 @@
     if (!src && navigator.onLine) { // chưa có trong máy: tải về một lần rồi dùng bản blob (giống ảnh hero tĩnh)
       try { const blob = await fetchImageBlob(url); landingBlobUrls.set(url, URL.createObjectURL(blob)); src = landingBlobUrls.get(url); } catch (e) { console.warn("Không tải được ảnh hero 360°:", e); }
     }
-    if (!src || seq !== heroPanoSeq || !noSurveyMode()) return; // đã đổi chế độ / có lần gọi mới hơn trong lúc tải
+    if (seq !== heroPanoSeq || !noSurveyMode()) return; // đã đổi chế độ / có lần gọi mới hơn trong lúc tải
+    if (!src) return heroPanoFallback(navigator.onLine ? "tải ảnh thất bại" : "chưa có ảnh trong máy (offline)");
     try { heroPano?.destroy(); } catch {}
-    box.innerHTML = "";
+    box.innerHTML = ""; box.classList.remove("off");
     const hero = box.closest(".hero");
     if (hero && getComputedStyle(hero).position === "static") hero.style.position = "relative"; // để Panellum phủ kín đúng khung hero
     heroPanoSrc = url;
@@ -1010,6 +1024,7 @@
       hfov: 100, minHfov: 60, maxHfov: 110, pitch: 0, yaw: 0,
       autoRotate: -2, autoRotateInactivityDelay: 4000
     });
+    heroPano.on("error", msg => { if (seq === heroPanoSeq) heroPanoFallback("Panellum: " + msg); }); // ví dụ ảnh quá lớn so với GPU của máy
     heroPanoIO?.disconnect();
     if ("IntersectionObserver" in window && hero) {
       heroPanoIO = new IntersectionObserver(es => { heroVisible = es[es.length - 1].isIntersecting; updateHeroRotate(); }, { root: $("scroller"), threshold: 0.05 });
