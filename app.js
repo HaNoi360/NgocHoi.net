@@ -472,7 +472,7 @@
         const timeout = new Promise(r => setTimeout(() => r(null), 6000));
         let reg = await Promise.race([navigator.serviceWorker.ready, timeout]);
         if (!reg) {
-          try { reg = await navigator.serviceWorker.register("./sw.js" + V); swNote = " (Service Worker đang cài đặt)"; }
+          try { reg = await navigator.serviceWorker.register("./sw.js" + V, { updateViaCache: "none" }); swNote = " (Service Worker đang cài đặt)"; }
           catch (e) { swNote = ` (không đăng ký được sw.js: ${e.message})`; }
         }
         swActive = !!(reg && reg.active);
@@ -1475,7 +1475,7 @@
       try {
         if (!tasks) { // lập kế hoạch một lần: biết trước toàn bộ việc phải làm để tính đúng % cho cả lộ trình
           try { await navigator.storage?.persist?.(); } catch {}
-          if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("./sw.js" + V).catch(() => {});
+          if ("serviceWorker" in navigator && location.protocol.startsWith("http")) navigator.serviceWorker.register("./sw.js" + V, { updateViaCache: "none" }).catch(() => {});
           if (!navigator.onLine) throw new Error("không có Internet");
           await syncTours(manual ? (i, n) => prog.set(DISC * i / Math.max(n, 1)) : undefined);
           prog.set(DISC);
@@ -1534,7 +1534,7 @@
   async function init() {
     if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
       // Trang khách: chỉ đăng ký Service Worker khi đã có bản offline (hoặc lúc tạo bản offline). Trang cài đặt (?admin=1) như cũ.
-      if (!appMode || isOfflineReady() || await shellCached()) { try { await navigator.serviceWorker.register("./sw.js" + V); } catch (e) { console.warn(e); } }
+      if (!appMode || isOfflineReady() || await shellCached()) { try { await navigator.serviceWorker.register("./sw.js" + V, { updateViaCache: "none" }); } catch (e) { console.warn(e); } }
     }
     if (typeof bootstrap === "undefined" || typeof pannellum === "undefined") {
       throw new Error("Thiếu thư viện " + [typeof bootstrap === "undefined" ? "Bootstrap" : "", typeof pannellum === "undefined" ? "Pannellum" : ""].filter(Boolean).join(" + ") + " (không tải được từ vendor/ lẫn CDN). Kiểm tra thư mục vendor/ trên host hoặc kết nối mạng.");

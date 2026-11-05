@@ -2,7 +2,10 @@
 try { importScripts("./config.js"); } catch (e) { /* không đọc được config.js: dùng giá trị mặc định */ }
 const APP_CFG = self.APP_CONFIG || {};
 const MA = String(APP_CFG.maApp || "").replace(/[^A-Za-z0-9_-]/g, "");
-const REV = String(APP_CFG.phienBan || "dev").split("-")[0];
+// Số phiên bản lấy từ CHÍNH địa chỉ đăng ký sw.js?v=rXX (app.js đăng ký kèm ?v=): luôn khớp tên bộ nhớ app.js đã lưu.
+// Không dựa vào config.js được nạp qua importScripts vì GitHub Pages cho trình duyệt giữ bản cũ tới 10 phút -> SW có thể tính ra phiên bản cũ, tìm sai bộ nhớ (hiện "Không thể truy cập") và xoá nhầm bộ nhớ mới.
+const URL_V = (() => { try { return new URL(self.location.href).searchParams.get("v") || ""; } catch (e) { return ""; } })();
+const REV = URL_V || String(APP_CFG.phienBan || "dev").split("-")[0];
 const V = "?v=" + REV;
 const SHELL_PREFIX = "panorama-shell:" + MA + ":";
 const SHELL_CACHE = SHELL_PREFIX + REV;
