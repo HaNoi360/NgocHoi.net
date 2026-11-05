@@ -1132,19 +1132,29 @@
   }
 
   // ----- Nút Bắt đầu: vào toàn màn hình (nếu trình duyệt cho phép) rồi kéo section đầu tiên lên -----
+  const isFull = () => !!(document.fullscreenElement || document.webkitFullscreenElement) || matchMedia("(display-mode: fullscreen)").matches;
   function enterFullscreen() {
     const d = document.documentElement;
-    if (document.fullscreenElement || !d.requestFullscreen) return;
-    d.requestFullscreen({ navigationUI: "hide" }).then(() => screen.orientation?.lock?.("portrait").catch(() => {})).catch(() => {});
+    if (isFull()) return;
+    const req = d.requestFullscreen || d.webkitRequestFullscreen;
+    if (!req) return; // ví dụ iPhone Safari không hỗ trợ: không làm gì
+    try {
+      const r = req.call(d, { navigationUI: "hide" });
+      if (r && r.then) r.then(() => screen.orientation?.lock?.("portrait").catch(() => {})).catch(() => {});
+    } catch {}
   }
-  // Trên điện thoại/máy tính bảng: nếu đang không ở chế độ toàn màn hình thì chạm lần nào cũng chuyển sang toàn màn hình
-  // (trình duyệt chỉ cho phép khi có thao tác của người dùng; thoát toàn màn hình rồi thì lần chạm kế tiếp sẽ vào lại)
+  // Điện thoại / máy tính bảng: nếu chưa ở toàn màn hình thì thao tác chạm đầu tiên (kể cả kéo xoay ảnh 360°) sẽ chuyển sang toàn màn hình;
+  // thoát ra rồi thì lần chạm kế tiếp vào lại (trình duyệt chỉ cho phép khi có thao tác của người dùng).
   function initAutoFullscreen() {
-    const mobile = () => matchMedia("(pointer: coarse)").matches && navigator.maxTouchPoints > 0;
-    document.addEventListener("pointerup", e => {
-      if (!mobile() || isStandalone() || document.fullscreenElement || e.target.closest?.("#btnStart")) return; // nút Bắt đầu tự xử lý
+    const touch = () => navigator.maxTouchPoints > 0;
+    // Tab S7 khi gắn bàn phím/bút S Pen có thể báo con trỏ chính là "fine": nhận diện thêm theo User-Agent (Android/iPad…) và iPadOS giả Mac
+    const mobile = () => touch() && (matchMedia("(pointer: coarse)").matches || /Android|iPhone|iPad|iPod|Mobile|Tablet/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
+    const tryFull = e => {
+      if (isFull() || !mobile() || e.target.closest?.("#btnStart")) return; // nút Bắt đầu (chế độ khảo sát) tự xử lý
       enterFullscreen();
-    }, { passive: true });
+    };
+    // capture + nhiều loại sự kiện: Panellum/khung 360° có thể chặn nổi bọt, và mỗi trình duyệt tính "thao tác người dùng" ở một sự kiện khác nhau
+    ["pointerup", "touchend", "click"].forEach(t => document.addEventListener(t, tryFull, { passive: true, capture: true }));
   }
   function initStart() {
     $("btnStart").addEventListener("click", () => {
