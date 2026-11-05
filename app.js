@@ -395,8 +395,12 @@
     const cache = await caches.open(SHELL_CACHE), cdn = await caches.open(CDN_CACHE);
     const libVendor = new Set(LIB_PAIRS.map(p => p[0]));
     for (const u of SHELL_URLS) {
-      if (await cache.match(u)) continue;
-      try { const r = await fetch(new Request(u, { cache: "reload" })); if (!r.ok) throw new Error("HTTP " + r.status); await cache.put(u, r); }
+      const old = await cache.match(u);
+      if (old && !old.redirected) continue; // bản đã lưu có cờ "redirected" (do host chuyển /index.html -> /) sẽ làm Chrome không mở được khi offline: tải lại bản sạch
+      try {
+        const r = await fetch(new Request(u, { cache: "reload" })); if (!r.ok) throw new Error("HTTP " + r.status);
+        await cache.put(u, r.redirected ? new Response(await r.blob(), { status: 200, statusText: "OK", headers: r.headers }) : r);
+      }
       catch (e) { if (!libVendor.has(u)) missing.push(u); }
     }
     for (const [v, c] of LIB_PAIRS) {

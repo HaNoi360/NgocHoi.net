@@ -54,11 +54,13 @@ self.addEventListener("fetch", event => {
       if (response.ok && response.type !== "opaque") cache.put(req, response.clone()).catch(() => {});
       return response;
     } catch (e) {
+      // Chrome KHÔNG cho trả về phản hồi có cờ "redirected" cho một lượt điều hướng (lỗi -> hiện trang khủng long). Host hay chuyển /index.html -> / nên bản lưu có thể mang cờ này: dựng lại bản sạch.
+      const clean = async r => (r && r.redirected) ? new Response(await r.blob(), { status: 200, statusText: "OK", headers: r.headers }) : r;
       const hit = await cache.match(req, { ignoreSearch: true });
-      if (hit) return hit;
+      if (hit) return clean(hit);
       if (sameOrigin && req.mode === "navigate") {
-        const fallback = (await cache.match("./index.html", { ignoreSearch: true })) || (await caches.match("./index.html", { ignoreSearch: true }));
-        if (fallback) return fallback;
+        const fallback = (await cache.match("./index.html", { ignoreSearch: true })) || (await cache.match("./", { ignoreSearch: true })) || (await caches.match("./index.html", { ignoreSearch: true }));
+        if (fallback) return clean(fallback);
       }
       throw e;
     }

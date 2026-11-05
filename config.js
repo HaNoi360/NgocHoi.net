@@ -19,7 +19,7 @@ g.APP_CONFIG = {
 
   // ===== 2. PHIÊN BẢN =====
   // Mỗi lần sửa file và đưa lên host, đổi số này (vd. r34-2026-11-02). Phần trước dấu "-" (r34) được dùng để làm mới bộ nhớ offline trên máy khách.
-  phienBan: "r39-2026-11-05",
+  phienBan: "r40-2026-11-05",
 
   // ===== 3. KHẢO SÁT =====
   // Chế độ ban đầu: false = chế độ tư vấn (bỏ khảo sát, giới thiệu dự án luôn); true = có khảo sát trước.
