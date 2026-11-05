@@ -20,6 +20,15 @@ self.addEventListener("activate", event => {
     await self.clients.claim();
   })());
 });
+// Tìm tệp trong BẤT KỲ bộ nhớ giao diện nào của website (phòng khi tên bộ nhớ SW tính ra khác tên app.js đã lưu, ví dụ đổi phiên bản giữa chừng)
+async function findShell(...urls) {
+  for (const k of await caches.keys()) {
+    if (!k.startsWith("panorama-shell")) continue;
+    const c = await caches.open(k);
+    for (const u of urls) { const r = await c.match(u, { ignoreSearch: true }); if (r) return r; }
+  }
+  return null;
+}
 self.addEventListener("fetch", event => {
   const req = event.request;
   if (req.method !== "GET") return;
@@ -56,10 +65,10 @@ self.addEventListener("fetch", event => {
     } catch (e) {
       // Chrome KHÔNG cho trả về phản hồi có cờ "redirected" cho một lượt điều hướng (lỗi -> hiện trang khủng long). Host hay chuyển /index.html -> / nên bản lưu có thể mang cờ này: dựng lại bản sạch.
       const clean = async r => (r && r.redirected) ? new Response(await r.blob(), { status: 200, statusText: "OK", headers: r.headers }) : r;
-      const hit = await cache.match(req, { ignoreSearch: true });
+      const hit = (await cache.match(req, { ignoreSearch: true })) || (sameOrigin ? await findShell(req.url) : null);
       if (hit) return clean(hit);
       if (sameOrigin && req.mode === "navigate") {
-        const fallback = (await cache.match("./index.html", { ignoreSearch: true })) || (await cache.match("./", { ignoreSearch: true })) || (await caches.match("./index.html", { ignoreSearch: true }));
+        const fallback = (await cache.match("./index.html", { ignoreSearch: true })) || (await cache.match("./", { ignoreSearch: true })) || (await findShell("./index.html", "./"));
         if (fallback) return clean(fallback);
       }
       throw e;

@@ -492,6 +492,7 @@
         if (sh.missing.length) parts.push(`${sh.missing.length} tệp giao diện (${sh.missing.slice(0, 3).join(", ")}${sh.missing.length > 3 ? "…" : ""})`);
         msg = `CHƯA đủ 100% — còn thiếu ${parts.join(", ")}. Bấm lại để tải tiếp phần còn thiếu.`;
       }
+      if (complete) { setOfflineReady(true); try { localStorage.setItem(SHELL_STAMP, REV); } catch {} } // đánh dấu đã có bản offline: App mở ra (không có ?admin=1) sẽ giữ Service Worker và dùng dữ liệu trong máy
       if (complete && !isStandalone() && !installMsg) installMsg = await installApp();
       setAppStatus(`${msg}${installMsg ? " " + installMsg : ""}`);
       bar.classList.remove("progress-bar-animated");
@@ -1369,7 +1370,7 @@
       }
       return;
     }
-    unregisterSW(); // bản online không dùng Service Worker (tránh tự lưu ảnh ngầm)
+    if (!(await shellCached())) unregisterSW(); // bản online không dùng Service Worker (tránh tự lưu ảnh ngầm) — nhưng KHÔNG gỡ nếu máy đã lưu giao diện offline (nếu gỡ, lần mở sau không có mạng sẽ không vào được)
     await onlineStart();
   }
 
@@ -1448,6 +1449,7 @@
       setOfflineReady(true); return true;
     } catch { return false; }
   }
+  async function shellCached() { try { return !!(await (await caches.open(SHELL_CACHE)).match("./index.html")); } catch { return false; } } // máy đã lưu sẵn giao diện để chạy offline
   const shellNeeded = async () => {
     try { if (localStorage.getItem(SHELL_STAMP) === REV && await (await caches.open(SHELL_CACHE)).match("./index.html")) return false; } catch {}
     return true;
@@ -1532,7 +1534,7 @@
   async function init() {
     if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
       // Trang khách: chỉ đăng ký Service Worker khi đã có bản offline (hoặc lúc tạo bản offline). Trang cài đặt (?admin=1) như cũ.
-      if (!appMode || isOfflineReady()) { try { await navigator.serviceWorker.register("./sw.js" + V); } catch (e) { console.warn(e); } }
+      if (!appMode || isOfflineReady() || await shellCached()) { try { await navigator.serviceWorker.register("./sw.js" + V); } catch (e) { console.warn(e); } }
     }
     if (typeof bootstrap === "undefined" || typeof pannellum === "undefined") {
       throw new Error("Thiếu thư viện " + [typeof bootstrap === "undefined" ? "Bootstrap" : "", typeof pannellum === "undefined" ? "Pannellum" : ""].filter(Boolean).join(" + ") + " (không tải được từ vendor/ lẫn CDN). Kiểm tra thư mục vendor/ trên host hoặc kết nối mạng.");
