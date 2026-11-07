@@ -9,11 +9,11 @@
 @font-face{font-family:'Cormorant Garamond';font-weight:600;font-display:swap;src:url(./fonts/cormorant-garamond-latin-ext-600-normal.woff2) format('woff2');unicode-range:U+0100-02AF,U+1E00-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF}
 
 /* ===== Giao diện App: RESPONSIVE — khung luôn lấp đầy màn hình (không còn khung cố định 10:16 của Galaxy Tab S7).
-   --w = bề rộng "cột nội dung" và cũng là cơ sở co giãn chữ (rem = --w/50): màn hình hẹp (điện thoại) = bề rộng màn hình;
-   màn hình rộng/nằm ngang = tối đa max(62.5% chiều cao, 640px), nội dung nằm gọn ở giữa còn ảnh nền (hero, dải parallax) tràn hết bề ngang. ===== */
+   --w = cơ sở co giãn chữ (rem = --w/50): màn hình hẹp (điện thoại) = bề rộng màn hình; --cw = bề rộng tối đa của khung nội dung;
+   màn hình rộng/nằm ngang: --w tối đa max(62.5% chiều cao, 640px); nội dung chia cột bằng lưới Bootstrap 5, ảnh nền (hero, dải parallax) tràn hết bề ngang. ===== */
 html:not(.app-mode) #appRoot { display: none; }
 html.app-mode #siteRoot { display: none; }
-html.app-mode { --w: min(100vw, max(62.5dvh, 640px)); font-size: calc(var(--w) / 50 * var(--fs, 1)); } /* 800px => 16px: toàn bộ rem co giãn theo khung */
+html.app-mode { --w: min(100vw, max(62.5dvh, 640px)); --cw: 80rem; font-size: calc(var(--w) / 50 * var(--fs, 1)); } /* 800px => 16px: toàn bộ rem co giãn theo khung */
 html.app-mode body { background: var(--letterbox); margin: 0; overflow: hidden; font-family: var(--font-body); }
 
 #appRoot {
@@ -51,7 +51,7 @@ html.app-mode body { background: var(--letterbox); margin: 0; overflow: hidden; 
 /* Section nội dung: tối thiểu bằng phần nhìn thấy dưới menu */
 #appRoot .panel { min-height: calc(100% - var(--menu)); display: flex; align-items: center; padding: 3.5rem 0; scroll-snap-align: start; }
 #appRoot .panel.alt { background: var(--ink2); }
-#appRoot .panel .container-fluid { padding-inline: 3rem; max-width: var(--w); margin-inline: auto; } /* nội dung nằm gọn trong cột --w ở giữa */
+#appRoot .panel .container-fluid { padding-inline: 3rem; max-width: var(--cw); margin-inline: auto; } /* khung nội dung tối đa --cw (80rem), ở giữa; bên trong dùng lưới Bootstrap row/col */
 #appRoot .panel h2 { font-size: 2.75rem; line-height: 1.1; margin-bottom: 1rem; }
 #appRoot .photo { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: .25rem; display: block; background: #0006; }
 #appRoot .fact { border-left: 2px solid var(--brass); padding: .25rem 0 .25rem 1rem; }
@@ -287,7 +287,7 @@ html.app-mode body { background: var(--letterbox); margin: 0; overflow: hidden; 
 #appRoot .pol-pane .bldg h3 { font-size: 1.75rem; }
 
 /* ===== Menu thu gọn: thanh gọn + danh sách thả xuống ===== */
-#appRoot #menu { --gut: calc((100% - var(--w)) / 2); padding: 0 calc(var(--gut) + .5rem) 0 var(--gut); gap: .5rem; }
+#appRoot #menu { --gut: max(0px, calc((100% - var(--cw)) / 2)); padding: 0 calc(var(--gut) + .5rem) 0 var(--gut); gap: .5rem; }
 #appRoot .menu-toggle { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: .75rem; height: 100%; padding: 0 1rem; border: 0; background: none; color: var(--strong); font-size: 1.0625rem; text-align: left; }
 #appRoot .menu-toggle span { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
 #appRoot .menu-toggle .chev { flex: 0 0 auto; color: var(--brass); transition: transform .2s; }
@@ -382,3 +382,10 @@ html.no-survey #khao-sat, html.no-survey #khao-sat-2, html.no-survey #menu .nav-
 #appRoot .cf-menu a span { font-size: 17px; font-weight: 500; letter-spacing: .02em; }
 @keyframes cf-ring { 0% { box-shadow: 0 4px 14px rgba(0,0,0,.4), 0 0 0 0 rgba(31,157,85,.55); } 70%,100% { box-shadow: 0 4px 14px rgba(0,0,0,.4), 0 0 0 14px rgba(31,157,85,0); } }
 @media (prefers-reduced-motion: reduce) { #appRoot .cf-call { animation: none; } }
+
+/* ===== Lưới Bootstrap 5 (row / col-12 col-xl-*): từ 1200px (xl) chia 2 cột; dưới 1200px (điện thoại, Tab dọc) giữ 1 cột như cũ ===== */
+@media (min-width: 1200px) {
+  #appRoot .ap-grid { grid-template-columns: repeat(3, 1fr); } /* danh sách tour/cảnh do JS tạo: 3 cột */
+  #appRoot .row > [class*="col-"] > .cx:first-child { margin-top: 0; } /* carousel đầu cột phải: canh thẳng hàng với cột trái */
+  #appRoot .row > [class*="col-"] > .pol-tabs:first-child { margin-top: 0; }
+}
