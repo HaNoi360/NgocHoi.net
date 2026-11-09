@@ -190,7 +190,7 @@ html.app-mode body { background: var(--letterbox); margin: 0; overflow: hidden; 
 #appRoot .cx-dot.on { background: var(--brass); width: 1.6rem; border-radius: 1rem; }
 
 /* Phóng to ảnh trong khung (bóc mái, mặt bằng) */
-#appRoot .zm { position: relative; overflow: hidden; border-radius: .25rem; background: #0006; touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: zoom-in; }
+#appRoot .zm { position: relative; overflow: hidden; contain: paint; isolation: isolate; border-radius: .25rem; background: #0006; touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: zoom-in; }
 #appRoot .zm.zoomed { touch-action: none; cursor: grab; }
 #appRoot .zm img { width: 100%; height: 100%; object-fit: cover; transform-origin: 0 0; -webkit-user-drag: none; pointer-events: none; border-radius: 0; }
 #appRoot .zm-btn { position: absolute; right: .6rem; bottom: .6rem; border: 0; border-radius: 999px; padding: .4rem .9rem; font-size: .8125rem; color: var(--strong); background: rgb(var(--ink-rgb) / .72); backdrop-filter: blur(6px); }
