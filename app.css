@@ -8,12 +8,10 @@
 @font-face{font-family:'Be Vietnam Pro';font-weight:500;font-display:swap;src:url(./fonts/be-vietnam-pro-latin-ext-500-normal.woff2) format('woff2');unicode-range:U+0100-02AF,U+1E00-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF}
 @font-face{font-family:'Cormorant Garamond';font-weight:600;font-display:swap;src:url(./fonts/cormorant-garamond-latin-ext-600-normal.woff2) format('woff2');unicode-range:U+0100-02AF,U+1E00-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF}
 
-/* ===== Giao diện App: RESPONSIVE — khung luôn lấp đầy màn hình (không còn khung cố định 10:16 của Galaxy Tab S7).
-   --w = cơ sở co giãn chữ (rem = --w/50): màn hình hẹp (điện thoại) = bề rộng màn hình; --cw = bề rộng tối đa của khung nội dung;
-   màn hình rộng/nằm ngang: --w tối đa max(62.5% chiều cao, 640px); nội dung chia cột bằng lưới Bootstrap 5, ảnh nền (hero, dải parallax) tràn hết bề ngang. ===== */
+/* ===== Giao diện App: khung dọc 10:16 (Galaxy Tab S7 dọc ≈ 800×1280) đặt giữa màn hình ===== */
 html:not(.app-mode) #appRoot { display: none; }
 html.app-mode #siteRoot { display: none; }
-html.app-mode { --w: min(100vw, max(62.5dvh, 640px)); --cw: 80rem; font-size: calc(var(--w) / 50 * var(--fs, 1)); } /* 800px => 16px: toàn bộ rem co giãn theo khung */
+html.app-mode { --w: min(100vw, 62.5dvh); font-size: calc(var(--w) / 50 * var(--fs, 1)); } /* 800px => 16px: toàn bộ rem co giãn theo khung */
 html.app-mode body { background: var(--letterbox); margin: 0; overflow: hidden; font-family: var(--font-body); }
 
 #appRoot {
@@ -21,7 +19,7 @@ html.app-mode body { background: var(--letterbox); margin: 0; overflow: hidden; 
   height: 100dvh; display: grid; place-items: center; color: var(--bone); -webkit-tap-highlight-color: transparent;
 }
 #appRoot button { font: inherit; cursor: pointer; }
-#appRoot .frame { position: relative; width: 100%; height: 100dvh; overflow: hidden; background: var(--ink);
+#appRoot .frame { position: relative; width: var(--w); height: calc(var(--w) / .625); overflow: hidden; background: var(--ink);
   transform: translateZ(0); /* để lớp parallax position:fixed bám theo khung, không bám theo cả màn hình */ }
 #appRoot .scroller { height: 100%; overflow-y: auto; overflow-x: hidden; scroll-snap-type: y proximity; scroll-padding-top: var(--menu);
   scrollbar-width: none; overscroll-behavior: contain; }
@@ -51,7 +49,7 @@ html.app-mode body { background: var(--letterbox); margin: 0; overflow: hidden; 
 /* Section nội dung: tối thiểu bằng phần nhìn thấy dưới menu */
 #appRoot .panel { min-height: calc(100% - var(--menu)); display: flex; align-items: center; padding: 3.5rem 0; scroll-snap-align: start; }
 #appRoot .panel.alt { background: var(--ink2); }
-#appRoot .panel .container-fluid { padding-inline: 3rem; max-width: var(--cw); margin-inline: auto; } /* khung nội dung tối đa --cw (80rem), ở giữa; bên trong dùng lưới Bootstrap row/col */
+#appRoot .panel .container-fluid { padding-inline: 3rem; }
 #appRoot .panel h2 { font-size: 2.75rem; line-height: 1.1; margin-bottom: 1rem; }
 #appRoot .photo { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; border-radius: .25rem; display: block; background: #0006; }
 #appRoot .fact { border-left: 2px solid var(--brass); padding: .25rem 0 .25rem 1rem; }
@@ -111,6 +109,11 @@ html.app-mode body { background: var(--letterbox); margin: 0; overflow: hidden; 
 #viewerModal .ap-x { position: absolute; z-index: 5; top: max(12px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right));
   width: 44px; height: 44px; border: 0; border-radius: 50%; background: rgba(0,0,0,.55); color: #fff; font-size: 28px; line-height: 1; padding: 0 0 3px; backdrop-filter: blur(6px); }
 
+/* Tablet/điện thoại có tỷ lệ gần 10:16 (đã trừ thanh hệ thống): lấp đầy màn hình, không còn viền đen */
+@media (min-aspect-ratio: 11/20) and (max-aspect-ratio: 4/5) {
+  html.app-mode { --w: 100vw; }
+  #appRoot .frame { height: 100dvh; }
+}
 
 /* Hero: nút Bắt đầu góc dưới bên phải */
 #appRoot .btn-start { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; margin: 0; padding: 0; border: 0; border-radius: 0; background: transparent;
@@ -189,7 +192,7 @@ html.app-mode body { background: var(--letterbox); margin: 0; overflow: hidden; 
 /* Phóng to ảnh trong khung (bóc mái, mặt bằng) */
 #appRoot .zm { position: relative; overflow: hidden; border-radius: .25rem; background: #0006; touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: zoom-in; }
 #appRoot .zm.zoomed { touch-action: none; cursor: grab; }
-#appRoot .zm img { width: 100%; height: 100%; object-fit: cover; transform-origin: 0 0; will-change: transform; -webkit-user-drag: none; pointer-events: none; border-radius: 0; }
+#appRoot .zm img { width: 100%; height: 100%; object-fit: cover; transform-origin: 0 0; -webkit-user-drag: none; pointer-events: none; border-radius: 0; }
 #appRoot .zm-btn { position: absolute; right: .6rem; bottom: .6rem; border: 0; border-radius: 999px; padding: .4rem .9rem; font-size: .8125rem; color: var(--strong); background: rgb(var(--ink-rgb) / .72); backdrop-filter: blur(6px); }
 
 /* ===== Thành phần nội dung (chữ, thẻ, bảng, tab chính sách) ===== */
@@ -287,12 +290,12 @@ html.app-mode body { background: var(--letterbox); margin: 0; overflow: hidden; 
 #appRoot .pol-pane .bldg h3 { font-size: 1.75rem; }
 
 /* ===== Menu thu gọn: thanh gọn + danh sách thả xuống ===== */
-#appRoot #menu { --gut: max(0px, calc((100% - var(--cw)) / 2)); padding: 0 calc(var(--gut) + .5rem) 0 var(--gut); gap: .5rem; }
+#appRoot #menu { padding: 0 .5rem 0 0; gap: .5rem; }
 #appRoot .menu-toggle { flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: .75rem; height: 100%; padding: 0 1rem; border: 0; background: none; color: var(--strong); font-size: 1.0625rem; text-align: left; }
 #appRoot .menu-toggle span { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
 #appRoot .menu-toggle .chev { flex: 0 0 auto; color: var(--brass); transition: transform .2s; }
 #appRoot #menu.open .menu-toggle .chev { transform: rotate(180deg); }
-#appRoot .menu-links { display: none; position: absolute; top: 100%; left: var(--gut); right: var(--gut); flex-direction: column; align-items: stretch; overflow-x: visible; overflow-y: auto; max-height: calc(100dvh - var(--menu) - 2rem);
+#appRoot .menu-links { display: none; position: absolute; top: 100%; left: 0; right: 0; flex-direction: column; align-items: stretch; overflow-x: visible; overflow-y: auto; max-height: calc(100dvh - var(--menu) - 2rem);
   background: rgb(var(--ink-rgb) / .98); backdrop-filter: blur(10px); border-bottom: 1px solid rgb(var(--brass-rgb) / .6); box-shadow: 0 1rem 2rem rgba(0,0,0,.45); }
 #appRoot #menu.open .menu-links { display: flex; }
 #appRoot #menu .menu-links .nav-link { padding: .95rem 1.25rem; font-size: 1.0625rem; border-bottom: 1px solid rgb(var(--bone-rgb) / .12); border-left: 3px solid transparent; }
@@ -369,8 +372,8 @@ html.no-survey #khao-sat, html.no-survey #khao-sat-2, html.no-survey #menu .nav-
 #appRoot .acc-item.on .acc-body { display: block; }
 #appRoot .acc-body .cx { margin: 1.5rem 0; }
 
-/* Nút gọi điện + Zalo nổi (góc dưới bên phải khung App, xếp ngay phía trên nút về đầu trang: 12px + 48px + 10px = 70px) */
-#appRoot .contact-fab { position: absolute; z-index: 20; right: 12px; bottom: calc(70px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+/* Nút gọi điện + Zalo nổi (góc dưới bên trái khung App) */
+#appRoot .contact-fab { position: absolute; z-index: 20; left: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
 #appRoot .cf-btn { width: 48px; height: 48px; border: 0; border-radius: 50%; display: grid; place-items: center; color: #fff; text-decoration: none; box-shadow: 0 4px 14px rgba(0,0,0,.4); }
 #appRoot .cf-call { background: #1f9d55; animation: cf-ring 2.4s ease-out infinite; }
 #appRoot .cf-zalo { background: #0068ff; font: 700 13px/1 var(--font-body, sans-serif); letter-spacing: 0; }
@@ -382,10 +385,3 @@ html.no-survey #khao-sat, html.no-survey #khao-sat-2, html.no-survey #menu .nav-
 #appRoot .cf-menu a span { font-size: 17px; font-weight: 500; letter-spacing: .02em; }
 @keyframes cf-ring { 0% { box-shadow: 0 4px 14px rgba(0,0,0,.4), 0 0 0 0 rgba(31,157,85,.55); } 70%,100% { box-shadow: 0 4px 14px rgba(0,0,0,.4), 0 0 0 14px rgba(31,157,85,0); } }
 @media (prefers-reduced-motion: reduce) { #appRoot .cf-call { animation: none; } }
-
-/* ===== Lưới Bootstrap 5 (row / col-12 col-xl-*): từ 1200px (xl) chia 2 cột; dưới 1200px (điện thoại, Tab dọc) giữ 1 cột như cũ ===== */
-@media (min-width: 1200px) {
-  #appRoot .ap-grid { grid-template-columns: repeat(3, 1fr); } /* danh sách tour/cảnh do JS tạo: 3 cột */
-  #appRoot .row > [class*="col-"] > .cx:first-child { margin-top: 0; } /* carousel đầu cột phải: canh thẳng hàng với cột trái */
-  #appRoot .row > [class*="col-"] > .pol-tabs:first-child { margin-top: 0; }
-}

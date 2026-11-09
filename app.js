@@ -893,7 +893,7 @@
     };
     const maxScale = () => Math.max(5, target());
     const clamp = () => { const w = wrap.clientWidth, h = wrap.clientHeight; tx = Math.min(0, Math.max(w * (1 - s), tx)); ty = Math.min(0, Math.max(h * (1 - s), ty)); };
-    const apply = () => { clamp(); img.style.transform = `translate(${tx}px,${ty}px) scale(${s})`; wrap.classList.toggle("zoomed", s > 1.01); btn.textContent = s > 1.01 ? "✕ Thu nhỏ" : "🔍 Chạm để phóng to"; };
+    const apply = () => { clamp(); img.style.transform = `translate(${tx}px,${ty}px) scale(${s})`; img.style.willChange = "transform"; clearTimeout(img._wc); img._wc = setTimeout(() => { img.style.willChange = "auto"; }, 150); wrap.classList.toggle("zoomed", s > 1.01); btn.textContent = s > 1.01 ? "✕ Thu nhỏ" : "🔍 Chạm để phóng to"; };
     const zoomAt = (x, y, ns) => { ns = Math.min(maxScale(), Math.max(1, ns)); tx = x - (x - tx) * ns / s; ty = y - (y - ty) * ns / s; s = ns; if (s <= 1.01) { s = 1; tx = ty = 0; } apply(); };
     const local = e => { const r = wrap.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
     btn.addEventListener("click", e => { e.stopPropagation(); if (s > 1.01) { s = 1; tx = ty = 0; apply(); } else zoomAt(wrap.clientWidth / 2, wrap.clientHeight / 2, target()); });
@@ -1132,29 +1132,19 @@
   }
 
   // ----- Nút Bắt đầu: vào toàn màn hình (nếu trình duyệt cho phép) rồi kéo section đầu tiên lên -----
-  const isFull = () => !!(document.fullscreenElement || document.webkitFullscreenElement) || matchMedia("(display-mode: fullscreen)").matches;
   function enterFullscreen() {
     const d = document.documentElement;
-    if (isFull()) return;
-    const req = d.requestFullscreen || d.webkitRequestFullscreen;
-    if (!req) return; // ví dụ iPhone Safari không hỗ trợ: không làm gì
-    try {
-      const r = req.call(d, { navigationUI: "hide" });
-      if (r && r.then) r.then(() => screen.orientation?.lock?.("portrait").catch(() => {})).catch(() => {});
-    } catch {}
+    if (document.fullscreenElement || !d.requestFullscreen) return;
+    d.requestFullscreen({ navigationUI: "hide" }).then(() => screen.orientation?.lock?.("portrait").catch(() => {})).catch(() => {});
   }
-  // Điện thoại / máy tính bảng: nếu chưa ở toàn màn hình thì thao tác chạm đầu tiên (kể cả kéo xoay ảnh 360°) sẽ chuyển sang toàn màn hình;
-  // thoát ra rồi thì lần chạm kế tiếp vào lại (trình duyệt chỉ cho phép khi có thao tác của người dùng).
+  // Trên điện thoại/máy tính bảng: nếu đang không ở chế độ toàn màn hình thì chạm lần nào cũng chuyển sang toàn màn hình
+  // (trình duyệt chỉ cho phép khi có thao tác của người dùng; thoát toàn màn hình rồi thì lần chạm kế tiếp sẽ vào lại)
   function initAutoFullscreen() {
-    const touch = () => navigator.maxTouchPoints > 0;
-    // Tab S7 khi gắn bàn phím/bút S Pen có thể báo con trỏ chính là "fine": nhận diện thêm theo User-Agent (Android/iPad…) và iPadOS giả Mac
-    const mobile = () => touch() && (matchMedia("(pointer: coarse)").matches || /Android|iPhone|iPad|iPod|Mobile|Tablet/i.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
-    const tryFull = e => {
-      if (isFull() || !mobile() || e.target.closest?.("#btnStart")) return; // nút Bắt đầu (chế độ khảo sát) tự xử lý
+    const mobile = () => matchMedia("(pointer: coarse)").matches && navigator.maxTouchPoints > 0;
+    document.addEventListener("pointerup", e => {
+      if (!mobile() || isStandalone() || document.fullscreenElement || e.target.closest?.("#btnStart")) return; // nút Bắt đầu tự xử lý
       enterFullscreen();
-    };
-    // capture + nhiều loại sự kiện: Panellum/khung 360° có thể chặn nổi bọt, và mỗi trình duyệt tính "thao tác người dùng" ở một sự kiện khác nhau
-    ["pointerup", "touchend", "click"].forEach(t => document.addEventListener(t, tryFull, { passive: true, capture: true }));
+    }, { passive: true });
   }
   function initStart() {
     $("btnStart").addEventListener("click", () => {
