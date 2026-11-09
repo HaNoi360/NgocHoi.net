@@ -50,7 +50,7 @@ g.APP_CONFIG = {
     hero_pano:"14CIb81FK60JuFQ3S2dvPlfqn7qUfm5jk", // Chế độ tư vấn: hero là ảnh 360° (Panellum) thay cho ảnh tĩnh hero_tuvan
     tongquan:"1LfYN05MoywpcoqxhNwud-jnh3E4wWzdH",
     chudautu:"1If2ewQGMtygv-Tgh0EtyKwKZr-vWRQL4",
-    vitri:"1hPsna__89G9VhOlbWq2vHNyZEYwyIp2R",
+    vitri:"1Ylpkmp7z8y9CI8tncBbiP5_E0gNmmN6g",
 
     plx1:"1keY8_JsCMitZvkAQH9QfQwKrJo11jlVi",
     plx2:"1keY8_JsCMitZvkAQH9QfQwKrJo11jlVi",
